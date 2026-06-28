@@ -1,436 +1,949 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Indian Railway Tracker</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f0f4f8; min-height: 100vh;
-      display: flex; align-items: flex-start; justify-content: center; padding: 1.5rem 1rem;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1.5rem 1rem;
     }
-    .container { width: 100%; max-width: 620px; }
+
+    .container {
+      width: 100%;
+      max-width: 620px;
+    }
 
     /* HEADER */
-    .header { text-align: center; margin-bottom: 1.5rem; }
-    .header .icon {
-      width: 56px; height: 56px; background: #2563eb; border-radius: 14px;
-      display: inline-flex; align-items: center; justify-content: center; margin-bottom: 0.75rem;
+    .header {
+      text-align: center;
+      margin-bottom: 1.5rem;
     }
-    .header .icon svg { width: 28px; height: 28px; fill: none; stroke: white; stroke-width: 2; }
-    .header h1 { font-size: 1.5rem; font-weight: 700; color: #1e293b; }
-    .header p { color: #64748b; font-size: 0.9rem; margin-top: 3px; }
+
+    .header .icon {
+      width: 56px;
+      height: 56px;
+      background: #2563eb;
+      border-radius: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .header .icon svg {
+      width: 28px;
+      height: 28px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .header p {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-top: 3px;
+    }
 
     /* TABS */
-    .tabs { display: flex; background: white; border-radius: 12px; padding: 4px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 1rem; gap: 4px; }
-    .tab-btn {
-      flex: 1; padding: 0.6rem; border: none; border-radius: 9px; cursor: pointer;
-      font-size: 0.85rem; font-weight: 600; transition: all 0.2s;
-      background: transparent; color: #64748b; display: flex; align-items: center; justify-content: center; gap: 6px;
+    .tabs {
+      display: flex;
+      background: white;
+      border-radius: 12px;
+      padding: 4px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      margin-bottom: 1rem;
+      gap: 4px;
     }
-    .tab-btn.active { background: #2563eb; color: white; }
-    .tab-btn svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+
+    .tab-btn {
+      flex: 1;
+      padding: 0.6rem;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      background: transparent;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    .tab-btn svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
 
     /* CARD */
     .card {
-      background: white; border-radius: 16px; padding: 1.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.05);
+      background: white;
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.05);
     }
 
     /* FORM */
-    .form-group { margin-bottom: 1rem; position: relative; }
-    label { display: block; font-size: 0.82rem; font-weight: 600; color: #374151; margin-bottom: 5px; }
-    input[type="text"], input[type="date"] {
-      width: 100%; padding: 0.7rem 1rem;
-      border: 1.5px solid #e2e8f0; border-radius: 10px;
-      font-size: 0.95rem; color: #1e293b; outline: none; transition: border-color 0.2s;
+    .form-group {
+      margin-bottom: 1rem;
+      position: relative;
     }
-    #pnr { letter-spacing: 3px; text-align: center; font-size: 1.1rem; }
-    input:focus { border-color: #2563eb; }
-    input::placeholder { letter-spacing: 0; color: #cbd5e1; font-size: 0.9rem; }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      color: #1e293b;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #pnr {
+      letter-spacing: 3px;
+      text-align: center;
+      font-size: 1.1rem;
+    }
+
+    input:focus {
+      border-color: #2563eb;
+    }
+
+    input::placeholder {
+      letter-spacing: 0;
+      color: #cbd5e1;
+      font-size: 0.9rem;
+    }
 
     /* AUTOCOMPLETE */
     .autocomplete-list {
-      position: absolute; top: 100%; left: 0; right: 0; background: white;
-      border: 1.5px solid #e2e8f0; border-top: none; border-radius: 0 0 10px 10px;
-      max-height: 200px; overflow-y: auto; z-index: 100;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1.5px solid #e2e8f0;
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
+
     .autocomplete-item {
-      padding: 0.6rem 1rem; cursor: pointer; font-size: 0.85rem;
-      display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #f1f5f9;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #f1f5f9;
     }
-    .autocomplete-item:last-child { border-bottom: none; }
-    .autocomplete-item:hover { background: #eff6ff; }
+
+    .autocomplete-item:last-child {
+      border-bottom: none;
+    }
+
+    .autocomplete-item:hover {
+      background: #eff6ff;
+    }
+
     .station-badge {
-      background: #eff6ff; color: #2563eb; font-size: 0.7rem; font-weight: 700;
-      padding: 2px 6px; border-radius: 4px; font-family: monospace; flex-shrink: 0;
+      background: #eff6ff;
+      color: #2563eb;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      flex-shrink: 0;
     }
 
     /* ROW */
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
 
     /* BTN */
     .btn {
-      width: 100%; padding: 0.8rem; background: #2563eb; color: white;
-      border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600;
-      cursor: pointer; transition: background 0.2s, transform 0.1s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%;
+      padding: 0.8rem;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
-    .btn:hover { background: #1d4ed8; }
-    .btn:active { transform: scale(0.98); }
-    .btn:disabled { background: #93c5fd; cursor: not-allowed; }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      background: #93c5fd;
+      cursor: not-allowed;
+    }
+
     .spinner {
-      width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* RESULTS */
-    .result { margin-top: 1.25rem; }
+    .result {
+      margin-top: 1.25rem;
+    }
+
     .result-header {
-      display: flex; align-items: center; gap: 10px;
-      padding-bottom: 0.9rem; border-bottom: 1px solid #f1f5f9; margin-bottom: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid #f1f5f9;
+      margin-bottom: 0.9rem;
     }
+
     .train-icon {
-      width: 40px; height: 40px; background: #eff6ff; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+      background: #eff6ff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
-    .train-icon svg { width: 20px; height: 20px; fill: none; stroke: #2563eb; stroke-width: 2; }
-    .train-name { font-size: 0.95rem; font-weight: 700; color: #1e293b; }
-    .train-meta { font-size: 0.75rem; color: #64748b; margin-top: 2px; }
+
+    .train-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: #2563eb;
+      stroke-width: 2;
+    }
+
+    .train-name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .train-meta {
+      font-size: 0.75rem;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
     .pnr-tag {
-      margin-left: auto; background: #eff6ff; color: #2563eb;
-      font-size: 0.72rem; font-weight: 700; padding: 3px 8px;
-      border-radius: 6px; letter-spacing: 1px; flex-shrink: 0;
+      margin-left: auto;
+      background: #eff6ff;
+      color: #2563eb;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 1px;
+      flex-shrink: 0;
     }
+
     .journey-box {
-      background: #f8fafc; border-radius: 10px; padding: 0.9rem;
-      margin-bottom: 0.9rem; display: grid;
-      grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px;
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 0.9rem;
+      margin-bottom: 0.9rem;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
     }
-    .stn-name { font-weight: 700; font-size: 0.88rem; color: #1e293b; }
-    .stn-code { font-size: 0.72rem; color: #94a3b8; margin-top: 2px; }
-    .stn-end { text-align: right; }
-    .jmid { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .track { display: flex; align-items: center; gap: 3px; width: 70px; }
-    .dot { width: 6px; height: 6px; background: #2563eb; border-radius: 50%; flex-shrink: 0; }
-    .line { flex: 1; height: 2px; background: #cbd5e1; }
-    .cls-badge { font-size: 0.68rem; background: white; border: 1px solid #e2e8f0; border-radius: 4px; padding: 2px 5px; color: #475569; }
-    .journey-date { font-size: 0.78rem; color: #64748b; text-align: center; margin-bottom: 0.9rem; }
-    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #f1f5f9; border-radius: 10px; overflow: hidden; margin-bottom: 0.9rem; }
-    .stat { background: white; padding: 0.65rem 0.9rem; }
-    .stat-label { font-size: 0.65rem; color: #94a3b8; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat-value { font-size: 0.85rem; font-weight: 700; color: #1e293b; }
-    .sec-title { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.65rem; }
+
+    .stn-name {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #1e293b;
+    }
+
+    .stn-code {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .stn-end {
+      text-align: right;
+    }
+
+    .jmid {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .track {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      width: 70px;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: #2563eb;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .line {
+      flex: 1;
+      height: 2px;
+      background: #cbd5e1;
+    }
+
+    .cls-badge {
+      font-size: 0.68rem;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      padding: 2px 5px;
+      color: #475569;
+    }
+
+    .journey-date {
+      font-size: 0.78rem;
+      color: #64748b;
+      text-align: center;
+      margin-bottom: 0.9rem;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: #f1f5f9;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 0.9rem;
+    }
+
+    .stat {
+      background: white;
+      padding: 0.65rem 0.9rem;
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      margin-bottom: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .sec-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.65rem;
+    }
+
     .passenger-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0.55rem 0; border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #f1f5f9;
     }
-    .passenger-row:last-child { border-bottom: none; }
-    .p-name { font-size: 0.82rem; color: #374151; }
-    .p-booking { font-size: 0.72rem; color: #94a3b8; font-family: monospace; }
-    .status-pill { font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
-    .pill-cnf { background: #dcfce7; color: #166534; }
-    .pill-wl  { background: #fef9c3; color: #854d0e; }
-    .pill-can { background: #fee2e2; color: #991b1b; }
-    .pill-unk { background: #f1f5f9; color: #475569; }
+
+    .passenger-row:last-child {
+      border-bottom: none;
+    }
+
+    .p-name {
+      font-size: 0.82rem;
+      color: #374151;
+    }
+
+    .p-booking {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      font-family: monospace;
+    }
+
+    .status-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 20px;
+    }
+
+    .pill-cnf {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .pill-wl {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .pill-can {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .pill-unk {
+      background: #f1f5f9;
+      color: #475569;
+    }
 
     /* TRAIN LIST */
-    .train-list { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; }
-    .train-card {
-      border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 0.9rem 1rem;
-      cursor: pointer; transition: all 0.2s; background: white;
+    .train-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 1rem;
     }
-    .train-card:hover { border-color: #2563eb; background: #eff6ff; }
-    .train-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-    .tc-name { font-size: 0.9rem; font-weight: 700; color: #1e293b; }
-    .tc-num { font-size: 0.75rem; color: #64748b; font-family: monospace; background: #f1f5f9; padding: 2px 7px; border-radius: 5px; }
-    .train-card-bottom { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #64748b; }
-    .tc-time { font-weight: 600; color: #1e293b; }
-    .tc-dot { width: 4px; height: 4px; background: #cbd5e1; border-radius: 50%; }
-    .tc-days { font-size: 0.7rem; }
+
+    .train-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    .train-card:hover {
+      border-color: #2563eb;
+      background: #eff6ff;
+    }
+
+    .train-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .tc-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .tc-num {
+      font-size: 0.75rem;
+      color: #64748b;
+      font-family: monospace;
+      background: #f1f5f9;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    .train-card-bottom {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .tc-time {
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .tc-dot {
+      width: 4px;
+      height: 4px;
+      background: #cbd5e1;
+      border-radius: 50%;
+    }
+
+    .tc-days {
+      font-size: 0.7rem;
+    }
 
     /* ERROR */
     .error-box {
-      background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;
-      padding: 0.9rem; display: flex; align-items: flex-start; gap: 10px; margin-top: 1rem;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      padding: 0.9rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 1rem;
     }
-    .error-box svg { width: 18px; height: 18px; flex-shrink: 0; stroke: #dc2626; fill: none; stroke-width: 2; margin-top: 1px; }
-    .error-title { font-size: 0.85rem; font-weight: 700; color: #dc2626; }
-    .error-msg { font-size: 0.78rem; color: #dc2626; opacity: 0.8; margin-top: 3px; }
 
-    .disclaimer { text-align: center; font-size: 0.7rem; color: #94a3b8; margin-top: 1.25rem; line-height: 1.6; }
+    .error-box svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      stroke: #dc2626;
+      fill: none;
+      stroke-width: 2;
+      margin-top: 1px;
+    }
 
-    .results-count { font-size: 0.8rem; color: #64748b; margin-bottom: 4px; }
+    .error-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #dc2626;
+    }
+
+    .error-msg {
+      font-size: 0.78rem;
+      color: #dc2626;
+      opacity: 0.8;
+      margin-top: 3px;
+    }
+
+    .disclaimer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #94a3b8;
+      margin-top: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .results-count {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+
     .back-btn {
-      display: flex; align-items: center; gap: 6px; background: none; border: none;
-      color: #2563eb; font-size: 0.82rem; font-weight: 600; cursor: pointer; margin-bottom: 1rem; padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: #2563eb;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      padding: 0;
     }
-    .back-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.5; }
+
+    .back-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+    }
   </style>
 </head>
+
 <body>
-<div class="container">
-  <div class="header">
-    <div class="icon">
-      <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 18v2M18 18v2M2 11h20M8 6V4M16 6V4"/></svg>
-    </div>
-    <h1>Indian Railway Tracker</h1>
-    <p>PNR status & train search in one place</p>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab-btn active" onclick="switchTab('pnr')">
-      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-      PNR Status
-    </button>
-    <button class="tab-btn" onclick="switchTab('trains')">
-      <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 18v2M18 18v2M2 11h20"/></svg>
-      Train Search
-    </button>
-    <button class="tab-btn" onclick="switchTab('live')">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-      Live Status
-    </button>
-  </div>
-
-  <!-- PNR TAB -->
-  <div id="tab-pnr" class="tab-content active">
-    <div class="card">
-      <div class="form-group">
-        <label for="pnr">PNR Number</label>
-        <input type="text" id="pnr" maxlength="10" placeholder="Enter 10-digit PNR"
-          oninput="this.value=this.value.replace(/\D/g,'')"
-          onkeydown="if(event.key==='Enter')checkPNR()"/>
+  <div class="container">
+    <div class="header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="6" width="20" height="12" rx="3" />
+          <path d="M6 18v2M18 18v2M2 11h20M8 6V4M16 6V4" />
+        </svg>
       </div>
-      <button class="btn" id="checkBtn" onclick="checkPNR()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        Check PNR Status
-      </button>
-      <div id="pnr-result"></div>
+      <h1>Indian Railway Tracker</h1>
+      <p>PNR status & train search in one place</p>
     </div>
-  </div>
 
-  <!-- TRAIN SEARCH TAB -->
-  <div id="tab-trains" class="tab-content">
-    <div class="card">
-      <div class="form-row">
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('pnr')">
+        <svg viewBox="0 0 24 24">
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <path d="M3 10h18M8 3v4M16 3v4" />
+        </svg>
+        PNR Status
+      </button>
+      <button class="tab-btn" onclick="switchTab('trains')">
+        <svg viewBox="0 0 24 24">
+          <rect x="2" y="6" width="20" height="12" rx="3" />
+          <path d="M6 18v2M18 18v2M2 11h20" />
+        </svg>
+        Train Search
+      </button>
+      <button class="tab-btn" onclick="switchTab('live')">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M12 8v4l3 3" />
+        </svg>
+        Live Status
+      </button>
+      <button class="tab-btn" id="delay-tab-btn" onclick="switchTab('delay')">
+        <svg viewBox="0 0 24 24">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+        Delay Predict
+      </button>
+    </div>
+
+    <!-- PNR TAB -->
+    <div id="tab-pnr" class="tab-content active">
+      <div class="card">
         <div class="form-group">
-          <label>From Station</label>
-          <input type="text" id="fromInput" placeholder="e.g. New Delhi" oninput="searchStation('from')" autocomplete="off"/>
-          <div class="autocomplete-list" id="fromList" style="display:none;"></div>
-          <input type="hidden" id="fromCode"/>
+          <label for="pnr">PNR Number</label>
+          <input type="text" id="pnr" maxlength="10" placeholder="Enter 10-digit PNR"
+            oninput="this.value=this.value.replace(/\D/g,'')" onkeydown="if(event.key==='Enter')checkPNR()" />
+        </div>
+        <button class="btn" id="checkBtn" onclick="checkPNR()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          Check PNR Status
+        </button>
+        <div id="pnr-result"></div>
+      </div>
+    </div>
+
+    <!-- TRAIN SEARCH TAB -->
+    <div id="tab-trains" class="tab-content">
+      <div class="card">
+        <div class="form-row">
+          <div class="form-group">
+            <label>From Station</label>
+            <input type="text" id="fromInput" placeholder="e.g. New Delhi" oninput="searchStation('from')"
+              autocomplete="off" />
+            <div class="autocomplete-list" id="fromList" style="display:none;"></div>
+            <input type="hidden" id="fromCode" />
+          </div>
+          <div class="form-group">
+            <label>To Station</label>
+            <input type="text" id="toInput" placeholder="e.g. Mumbai" oninput="searchStation('to')"
+              autocomplete="off" />
+            <div class="autocomplete-list" id="toList" style="display:none;"></div>
+            <input type="hidden" id="toCode" />
+          </div>
+        </div>
+        <button class="btn" id="searchBtn" onclick="searchTrains()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          Search Trains
+        </button>
+        <div id="train-result"></div>
+      </div>
+    </div>
+
+    <!-- LIVE STATUS TAB -->
+    <div id="tab-live" class="tab-content">
+      <div class="card">
+        <div class="form-group">
+          <label>Train Number or Name</label>
+          <input type="text" id="liveTrainInput" placeholder="e.g. 12566 or Bihar Sampark"
+            oninput="searchLiveTrain(this.value)" onkeydown="if(event.key==='Enter')checkLiveStatus()" />
+          <div class="autocomplete-list" id="liveTrainList" style="display:none;"></div>
+        </div>
+        <button class="btn" id="liveBtn" onclick="checkLiveStatus()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 8v4l3 3" />
+          </svg>
+          Get Live Status
+        </button>
+        <div id="live-result"></div>
+      </div>
+    </div>
+
+    <!-- DELAY PREDICTOR TAB -->
+    <div id="tab-delay" class="tab-content">
+      <div class="card">
+        <div id="delay-model-notice"
+          style="display:none;background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:0.8rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:#78350f;">
+          <strong>Model not ready yet.</strong> Training is still running. Please wait and refresh in a few minutes.
         </div>
         <div class="form-group">
-          <label>To Station</label>
-          <input type="text" id="toInput" placeholder="e.g. Mumbai" oninput="searchStation('to')" autocomplete="off"/>
-          <div class="autocomplete-list" id="toList" style="display:none;"></div>
-          <input type="hidden" id="toCode"/>
+          <label for="delayTrainInput">Train Number</label>
+          <input type="text" id="delayTrainInput" placeholder="e.g. 12301 or Howrah Rajdhani"
+            oninput="searchDelayTrain(this.value)" onkeydown="if(event.key==='Enter')predictDelay()"
+            autocomplete="off" />
+          <div class="autocomplete-list" id="delayTrainList" style="display:none;"></div>
+          <input type="hidden" id="delayTrainNo" />
         </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="delayStationInput">Station Code</label>
+            <input type="text" id="delayStationInput" placeholder="e.g. NDLS, HWH" autocomplete="off"
+              oninput="searchDelayStation(this.value)" />
+            <div class="autocomplete-list" id="delayStationList" style="display:none;"></div>
+            <input type="hidden" id="delayStationCode" />
+          </div>
+          <div class="form-group">
+            <label for="delayDate">Journey Date</label>
+            <input type="date" id="delayDate" />
+          </div>
+        </div>
+        <button class="btn" id="delayBtn" onclick="predictDelay()"
+          style="background:linear-gradient(135deg,#7c3aed,#2563eb);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          Predict Delay
+        </button>
+        <div id="delay-result"></div>
       </div>
-      <button class="btn" id="searchBtn" onclick="searchTrains()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        Search Trains
-      </button>
-      <div id="train-result"></div>
     </div>
+
+    <p class="disclaimer">
+      Unofficial API for educational purposes. Not affiliated with Indian Railways or IRCTC.<br>
+      For official status visit <a href="https://www.indianrail.gov.in" target="_blank"
+        style="color:#2563eb;">indianrail.gov.in</a>
+    </p>
   </div>
 
-  <!-- LIVE STATUS TAB -->
-  <div id="tab-live" class="tab-content">
-    <div class="card">
-      <div class="form-group">
-        <label>Train Number or Name</label>
-        <input type="text" id="liveTrainInput" placeholder="e.g. 12566 or Bihar Sampark"
-          oninput="searchLiveTrain(this.value)"
-          onkeydown="if(event.key==='Enter')checkLiveStatus()"/>
-        <div class="autocomplete-list" id="liveTrainList" style="display:none;"></div>
-      </div>
-      <button class="btn" id="liveBtn" onclick="checkLiveStatus()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-        Get Live Status
-      </button>
-      <div id="live-result"></div>
-    </div>
-  </div>
+  <script>
+    // ── Station lookup ──────────────────────────────────────────────
+    const STATIONS = {
+      // Delhi & NCR
+      "NDLS": "New Delhi", "NZM": "Hazrat Nizamuddin", "DLI": "Old Delhi", "DEE": "Delhi Sarai Rohilla",
+      "ANVT": "Anand Vihar Terminal", "DSA": "Delhi Shahdara", "GZB": "Ghaziabad", "FDB": "Faridabad",
+      "GGN": "Gurugram", "ROK": "Rohtak Jn", "PNP": "Panipat Jn", "SNP": "Sonipat",
+      "RE": "Rewari", "BVH": "Bahadurgarh", "NNO": "Narnaul", "TKD": "Tuglakabad",
+      // Uttar Pradesh
+      "CNB": "Kanpur Central", "LKO": "Lucknow", "LJN": "Lucknow NR", "BSB": "Varanasi Jn",
+      "PRYJ": "Prayagraj Jn", "ALD": "Allahabad Jn", "AGC": "Agra Cantt", "AF": "Agra Fort",
+      "MTJ": "Mathura Jn", "ETW": "Etawah", "GWL": "Gwalior", "JHS": "Jhansi Jn",
+      "ALJN": "Aligarh Jn", "MB": "Moradabad", "BE": "Bareilly", "SV": "Shahjahanpur",
+      "FZD": "Faizabad Jn", "GKP": "Gorakhpur Jn", "DDN": "Dehradun", "HW": "Haridwar Jn",
+      "RKE": "Rishikesh", "MZP": "Mirzapur", "MGS": "Mughal Sarai", "DDU": "Pt DD Upadhyaya Jn",
+      "BXR": "Buxar", "BNKI": "Barabanki Jn", "SLN": "Sultanpur", "PBH": "Pratapgarh Jn",
+      "JNU": "Jaunpur Jn", "MUV": "Manduadih", "KTE": "Katni Jn", "STN": "Satna",
+      "RWA": "Rewa", "AMH": "Azamgarh", "BUI": "Ballia", "MAU": "Mau Jn",
+      // Rajasthan
+      "JP": "Jaipur", "AII": "Ajmer Jn", "UDZ": "Udaipur City", "BKN": "Bikaner Jn",
+      "JU": "Jodhpur Jn", "KOTA": "Kota Jn", "SWM": "Sawai Madhopur", "BTE": "Baran",
+      "RTM": "Ratlam Jn", "NWD": "Nagda Jn", "MDS": "Marwar Jn", "PNU": "Pali Marwar",
+      "AF": "Abu Road", "GGC": "Gangapur City", "BHL": "Bharatpur",
+      // Madhya Pradesh
+      "BPL": "Bhopal Jn", "HBJ": "Habibganj", "INDB": "Indore Jn", "UJN": "Ujjain Jn",
+      "NGP": "Nagpur", "JBP": "Jabalpur", "ET": "Itarsi Jn", "KNW": "Khandwa",
+      "BRC": "Vadodara Jn", "RTM": "Ratlam Jn", "GNA": "Guna", "BIN": "Bina Jn",
+      "SGO": "Sagar", "DMO": "Damoh", "NKJ": "New Katni Jn", "CPH": "Chhindwara",
+      "SBP": "Seoni", "GWD": "Gwalior", "MKC": "Maksi",
+      // Gujarat
+      "ADI": "Ahmedabad Jn", "ST": "Surat", "BRC": "Vadodara Jn", "RJT": "Rajkot Jn",
+      "BVP": "Bharuch", "VAPI": "Vapi", "NDB": "Nadiad Jn", "APR": "Anand Jn",
+      "GDT": "Gandhinagar Capital", "MHV": "Mehsana Jn", "PBR": "Porbandar",
+      "JND": "Jamnagar", "BHJ": "Bhuj", "VRL": "Veraval", "OKHA": "Okha",
+      "DWK": "Dwarka", "UJD": "Unja", "SKH": "Surendranagar",
+      // Maharashtra
+      "CSTM": "Mumbai CST", "BCT": "Mumbai Central", "LTT": "Lokmanya Tilak Terminal",
+      "DR": "Dadar", "PNVL": "Panvel", "KYN": "Kalyan Jn", "BSL": "Bhusaval Jn",
+      "PUNE": "Pune Jn", "PA": "Pune Airport", "MRJ": "Miraj Jn", "SLI": "Solapur",
+      "NK": "Nashik Road", "MMR": "Manmad Jn", "NGP": "Nagpur", "WR": "Wardha Jn",
+      "AK": "Akola Jn", "AMI": "Amravati", "NED": "Nanded", "PBN": "Parbhani Jn",
+      "AWB": "Aurangabad", "DD": "Dhule", "KOP": "Kolhapur", "SUR": "Solapur",
+      "LNL": "Lonavala", "KJT": "Karjat", "THANE": "Thane", "BVI": "Borivali",
+      // Karnataka
+      "SBC": "KSR Bengaluru", "YPR": "Yesvantpur Jn", "BNC": "Bengaluru Cantt",
+      "KJM": "Krishnarajapuram", "BWT": "Bangarapet", "MAQ": "Mangaluru Central",
+      "MAJN": "Mangaluru Jn", "UBL": "Hubballi Jn", "DWR": "Dharwad", "BGM": "Belagavi",
+      "GDG": "Gadag Jn", "BAY": "Ballari Jn", "GTL": "Guntakal Jn", "ASK": "Arsikere Jn",
+      "MYS": "Mysuru Jn", "CNNR": "Kannur", "HAS": "Hassan", "TK": "Tumkuru",
+      "DVG": "Davangere", "SSL": "Shivamogga Town", "KGI": "Kalaburagi",
+      // Tamil Nadu
+      "MAS": "Chennai Central", "MS": "Chennai Egmore", "CBE": "Coimbatore Jn",
+      "MDU": "Madurai Jn", "TEN": "Tirunelveli", "NCJ": "Nagercoil Jn", "SA": "Salem Jn",
+      "ED": "Erode Jn", "KPD": "Katpadi Jn", "JTJ": "Jolarpettai", "TJ": "Thanjavur Jn",
+      "TPJ": "Tiruchirappalli Jn", "TN": "Tirunelveli", "RMM": "Rameswaram",
+      "TUT": "Thoothukudi", "CVP": "Karaikudi Jn", "PGT": "Palakkad Jn", "POD": "Puducherry",
+      "VM": "Villupuram Jn", "AJJ": "Arakkonam Jn", "GDR": "Gudur Jn", "RU": "Renigunta Jn",
+      "TPT": "Tirupati", "TRL": "Tiruvallur", "CGL": "Chengalpattu",
+      // Kerala
+      "TVC": "Thiruvananthapuram", "QLN": "Kollam Jn", "ALLP": "Alappuzha",
+      "ERS": "Ernakulam Jn", "AWY": "Aluva", "TCR": "Thrissur", "SRR": "Shoranur Jn",
+      "CLT": "Kozhikode", "CAN": "Kannur", "MAJN": "Mangaluru Jn", "KZE": "Kasaragod",
+      "VAD": "Varkala Sivagiri", "KTYM": "Kottayam", "TVC": "Trivandrum Central",
+      "NCB": "Nanchilnadu", "PGT": "Palakkad",
+      // Andhra Pradesh & Telangana
+      "SC": "Secunderabad Jn", "HYB": "Hyderabad", "NLR": "Nellore", "GNT": "Guntur Jn",
+      "BZA": "Vijayawada Jn", "VSKP": "Visakhapatnam", "OGL": "Ongole", "MTM": "Mangalagiri",
+      "RJY": "Rajahmundry", "SLO": "Srikakulam Road", "VZM": "Vizianagaram",
+      "TPTY": "Tirupati", "GTL": "Guntakal", "KI": "Kurnool City", "NDKD": "Nandyal",
+      "MTD": "Mahbubnagar", "WL": "Warangal", "KZJ": "Kazipet Jn", "NZB": "Nizamabad",
+      "ADB": "Adilabad", "KC": "Kacheguda",
+      // West Bengal
+      "HWH": "Howrah Jn", "SDAH": "Sealdah", "KOAA": "Kolkata", "MUC": "Malda Court",
+      "NHT": "New Haldibari", "RPH": "Rampur Hat", "BWN": "Barddhaman", "DGR": "Durgapur",
+      "ASN": "Asansol Jn", "RNC": "Ranchi", "ADRA": "Adra Jn", "KGP": "Kharagpur Jn",
+      "MDN": "Midnapore", "HLZ": "Haldia", "BHR": "Baharampur Court", "MLDT": "Malda Town",
+      // Bihar & Jharkhand
+      "PNBE": "Patna Jn", "PAT": "Patna Jn", "GAYA": "Gaya Jn", "MFP": "Muzaffarpur Jn",
+      "SPJ": "Samastipur Jn", "DBG": "Darbhanga Jn", "BJU": "Barauni Jn", "BGP": "Bhagalpur",
+      "JYG": "Jayanagar", "SHC": "Saharsa Jn", "DNR": "Danapur", "BKP": "Bakhtiyarpur",
+      "DHN": "Dhanbad Jn", "GMO": "Gomoh Jn", "TATA": "Tatanagar Jn", "CKP": "Chakradharpur",
+      "ROU": "Rourkela", "HZB": "Hazaribag Road", "RNC": "Ranchi", "BKSC": "Bokaro Steel City",
+      "GHD": "Giridih", "JHD": "Jhajha", "JAJ": "Jasidih Jn", "DUM": "Dumka",
+      // Odisha
+      "BBS": "Bhubaneswar", "CTC": "Cuttack", "PURI": "Puri", "SBP": "Sambalpur Jn",
+      "ROU": "Rourkela", "BRGA": "Berhampur", "BAM": "Baripada", "KUR": "Khurda Road Jn",
+      "TALA": "Talcher", "ANGL": "Angul", "JSG": "Jharsuguda Jn", "RJG": "Rajgangpur",
+      // Punjab & Haryana
+      "ASR": "Amritsar Jn", "LDH": "Ludhiana Jn", "UMB": "Ambala Cantt", "CDG": "Chandigarh",
+      "FZR": "Firozpur Cantt", "BTI": "Bathinda Jn", "PTK": "Patiala", "RPJ": "Rupnagar",
+      "SAS": "Sri Anandpur Sahib", "MOR": "Morinda", "KLK": "Kalka", "NRW": "Narwana",
+      "HNS": "Hansi", "HSR": "Hisar", "JND": "Jind Jn", "KRK": "Kurukshetra Jn",
+      // Himachal Pradesh & J&K
+      "JAT": "Jammu Tawi", "UHP": "Udhampur", "SVDK": "Shri Mata Vaishno Devi Katra",
+      "PTK": "Pathankot Cantt", "SML": "Shimla", "KLK": "Kalka", "AMD": "Amb Andaura",
+      // Assam & NE
+      "GHY": "Guwahati", "DBRG": "Dibrugarh", "SCL": "Silchar", "AGTL": "Agartala",
+      "KYQ": "Kamakhya", "LMG": "Lumding Jn", "JTTN": "Jiribam", "RNY": "Rangiya Jn",
+      "MXN": "Mariani Jn", "SMJN": "Sibsagar Town", "NBQ": "New Bongaigaon",
+      "RSKT": "Rangapara North", "TSK": "Tinsukia Jn", "DLB": "Dimapur",
+      // Uttarakhand
+      "DDN": "Dehradun", "HW": "Haridwar Jn", "RKE": "Rishikesh", "KB": "Kathgodam",
+      "LKU": "Lalkuan", "RMR": "Ramnagar", "TDL": "Tanakpur", "KGM": "Kashipur",
+      // Chhattisgarh
+      "R": "Raipur Jn", "BSP": "Bilaspur Jn", "DRZ": "Durg", "APR": "Ambikapur",
+      "RIG": "Rajnandgaon", "CPH": "Champa", "CPX": "Korba", "KRDL": "Katghora",
+      // Goa
+      "MAO": "Madgaon", "VASCO": "Vasco Da Gama", "LD": "Londa Jn", "CNB": "Calem"
+    };
+    function getStationName(code) {
+      if (!code) return '';
+      const c = code.trim().toUpperCase();
+      return STATIONS[c] ? `${STATIONS[c]} (${c})` : code;
+    }
 
-  <p class="disclaimer">
-    Unofficial API for educational purposes. Not affiliated with Indian Railways or IRCTC.<br>
-    For official status visit <a href="https://www.indianrail.gov.in" target="_blank" style="color:#2563eb;">indianrail.gov.in</a>
-  </p>
-</div>
+    // ── Tabs ────────────────────────────────────────────────────────
+    function switchTab(tab) {
+      const tabs = ['pnr', 'trains', 'live', 'delay'];
+      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', tabs[i] === tab));
+      tabs.forEach(t => document.getElementById('tab-' + t).classList.toggle('active', t === tab));
+      if (tab === 'delay') checkModelStatus();
+    }
 
-<script>
-// ── Station lookup ──────────────────────────────────────────────
-const STATIONS = {
-  // Delhi & NCR
-  "NDLS":"New Delhi","NZM":"Hazrat Nizamuddin","DLI":"Old Delhi","DEE":"Delhi Sarai Rohilla",
-  "ANVT":"Anand Vihar Terminal","DSA":"Delhi Shahdara","GZB":"Ghaziabad","FDB":"Faridabad",
-  "GGN":"Gurugram","ROK":"Rohtak Jn","PNP":"Panipat Jn","SNP":"Sonipat",
-  "RE":"Rewari","BVH":"Bahadurgarh","NNO":"Narnaul","TKD":"Tuglakabad",
-  // Uttar Pradesh
-  "CNB":"Kanpur Central","LKO":"Lucknow","LJN":"Lucknow NR","BSB":"Varanasi Jn",
-  "PRYJ":"Prayagraj Jn","ALD":"Allahabad Jn","AGC":"Agra Cantt","AF":"Agra Fort",
-  "MTJ":"Mathura Jn","ETW":"Etawah","GWL":"Gwalior","JHS":"Jhansi Jn",
-  "ALJN":"Aligarh Jn","MB":"Moradabad","BE":"Bareilly","SV":"Shahjahanpur",
-  "FZD":"Faizabad Jn","GKP":"Gorakhpur Jn","DDN":"Dehradun","HW":"Haridwar Jn",
-  "RKE":"Rishikesh","MZP":"Mirzapur","MGS":"Mughal Sarai","DDU":"Pt DD Upadhyaya Jn",
-  "BXR":"Buxar","BNKI":"Barabanki Jn","SLN":"Sultanpur","PBH":"Pratapgarh Jn",
-  "JNU":"Jaunpur Jn","MUV":"Manduadih","KTE":"Katni Jn","STN":"Satna",
-  "RWA":"Rewa","AMH":"Azamgarh","BUI":"Ballia","MAU":"Mau Jn",
-  // Rajasthan
-  "JP":"Jaipur","AII":"Ajmer Jn","UDZ":"Udaipur City","BKN":"Bikaner Jn",
-  "JU":"Jodhpur Jn","KOTA":"Kota Jn","SWM":"Sawai Madhopur","BTE":"Baran",
-  "RTM":"Ratlam Jn","NWD":"Nagda Jn","MDS":"Marwar Jn","PNU":"Pali Marwar",
-  "AF":"Abu Road","GGC":"Gangapur City","BHL":"Bharatpur",
-  // Madhya Pradesh
-  "BPL":"Bhopal Jn","HBJ":"Habibganj","INDB":"Indore Jn","UJN":"Ujjain Jn",
-  "NGP":"Nagpur","JBP":"Jabalpur","ET":"Itarsi Jn","KNW":"Khandwa",
-  "BRC":"Vadodara Jn","RTM":"Ratlam Jn","GNA":"Guna","BIN":"Bina Jn",
-  "SGO":"Sagar","DMO":"Damoh","NKJ":"New Katni Jn","CPH":"Chhindwara",
-  "SBP":"Seoni","GWD":"Gwalior","MKC":"Maksi",
-  // Gujarat
-  "ADI":"Ahmedabad Jn","ST":"Surat","BRC":"Vadodara Jn","RJT":"Rajkot Jn",
-  "BVP":"Bharuch","VAPI":"Vapi","NDB":"Nadiad Jn","APR":"Anand Jn",
-  "GDT":"Gandhinagar Capital","MHV":"Mehsana Jn","PBR":"Porbandar",
-  "JND":"Jamnagar","BHJ":"Bhuj","VRL":"Veraval","OKHA":"Okha",
-  "DWK":"Dwarka","UJD":"Unja","SKH":"Surendranagar",
-  // Maharashtra
-  "CSTM":"Mumbai CST","BCT":"Mumbai Central","LTT":"Lokmanya Tilak Terminal",
-  "DR":"Dadar","PNVL":"Panvel","KYN":"Kalyan Jn","BSL":"Bhusaval Jn",
-  "PUNE":"Pune Jn","PA":"Pune Airport","MRJ":"Miraj Jn","SLI":"Solapur",
-  "NK":"Nashik Road","MMR":"Manmad Jn","NGP":"Nagpur","WR":"Wardha Jn",
-  "AK":"Akola Jn","AMI":"Amravati","NED":"Nanded","PBN":"Parbhani Jn",
-  "AWB":"Aurangabad","DD":"Dhule","KOP":"Kolhapur","SUR":"Solapur",
-  "LNL":"Lonavala","KJT":"Karjat","THANE":"Thane","BVI":"Borivali",
-  // Karnataka
-  "SBC":"KSR Bengaluru","YPR":"Yesvantpur Jn","BNC":"Bengaluru Cantt",
-  "KJM":"Krishnarajapuram","BWT":"Bangarapet","MAQ":"Mangaluru Central",
-  "MAJN":"Mangaluru Jn","UBL":"Hubballi Jn","DWR":"Dharwad","BGM":"Belagavi",
-  "GDG":"Gadag Jn","BAY":"Ballari Jn","GTL":"Guntakal Jn","ASK":"Arsikere Jn",
-  "MYS":"Mysuru Jn","CNNR":"Kannur","HAS":"Hassan","TK":"Tumkuru",
-  "DVG":"Davangere","SSL":"Shivamogga Town","KGI":"Kalaburagi",
-  // Tamil Nadu
-  "MAS":"Chennai Central","MS":"Chennai Egmore","CBE":"Coimbatore Jn",
-  "MDU":"Madurai Jn","TEN":"Tirunelveli","NCJ":"Nagercoil Jn","SA":"Salem Jn",
-  "ED":"Erode Jn","KPD":"Katpadi Jn","JTJ":"Jolarpettai","TJ":"Thanjavur Jn",
-  "TPJ":"Tiruchirappalli Jn","TN":"Tirunelveli","RMM":"Rameswaram",
-  "TUT":"Thoothukudi","CVP":"Karaikudi Jn","PGT":"Palakkad Jn","POD":"Puducherry",
-  "VM":"Villupuram Jn","AJJ":"Arakkonam Jn","GDR":"Gudur Jn","RU":"Renigunta Jn",
-  "TPT":"Tirupati","TRL":"Tiruvallur","CGL":"Chengalpattu",
-  // Kerala
-  "TVC":"Thiruvananthapuram","QLN":"Kollam Jn","ALLP":"Alappuzha",
-  "ERS":"Ernakulam Jn","AWY":"Aluva","TCR":"Thrissur","SRR":"Shoranur Jn",
-  "CLT":"Kozhikode","CAN":"Kannur","MAJN":"Mangaluru Jn","KZE":"Kasaragod",
-  "VAD":"Varkala Sivagiri","KTYM":"Kottayam","TVC":"Trivandrum Central",
-  "NCB":"Nanchilnadu","PGT":"Palakkad",
-  // Andhra Pradesh & Telangana
-  "SC":"Secunderabad Jn","HYB":"Hyderabad","NLR":"Nellore","GNT":"Guntur Jn",
-  "BZA":"Vijayawada Jn","VSKP":"Visakhapatnam","OGL":"Ongole","MTM":"Mangalagiri",
-  "RJY":"Rajahmundry","SLO":"Srikakulam Road","VZM":"Vizianagaram",
-  "TPTY":"Tirupati","GTL":"Guntakal","KI":"Kurnool City","NDKD":"Nandyal",
-  "MTD":"Mahbubnagar","WL":"Warangal","KZJ":"Kazipet Jn","NZB":"Nizamabad",
-  "ADB":"Adilabad","KC":"Kacheguda",
-  // West Bengal
-  "HWH":"Howrah Jn","SDAH":"Sealdah","KOAA":"Kolkata","MUC":"Malda Court",
-  "NHT":"New Haldibari","RPH":"Rampur Hat","BWN":"Barddhaman","DGR":"Durgapur",
-  "ASN":"Asansol Jn","RNC":"Ranchi","ADRA":"Adra Jn","KGP":"Kharagpur Jn",
-  "MDN":"Midnapore","HLZ":"Haldia","BHR":"Baharampur Court","MLDT":"Malda Town",
-  // Bihar & Jharkhand
-  "PNBE":"Patna Jn","PAT":"Patna Jn","GAYA":"Gaya Jn","MFP":"Muzaffarpur Jn",
-  "SPJ":"Samastipur Jn","DBG":"Darbhanga Jn","BJU":"Barauni Jn","BGP":"Bhagalpur",
-  "JYG":"Jayanagar","SHC":"Saharsa Jn","DNR":"Danapur","BKP":"Bakhtiyarpur",
-  "DHN":"Dhanbad Jn","GMO":"Gomoh Jn","TATA":"Tatanagar Jn","CKP":"Chakradharpur",
-  "ROU":"Rourkela","HZB":"Hazaribag Road","RNC":"Ranchi","BKSC":"Bokaro Steel City",
-  "GHD":"Giridih","JHD":"Jhajha","JAJ":"Jasidih Jn","DUM":"Dumka",
-  // Odisha
-  "BBS":"Bhubaneswar","CTC":"Cuttack","PURI":"Puri","SBP":"Sambalpur Jn",
-  "ROU":"Rourkela","BRGA":"Berhampur","BAM":"Baripada","KUR":"Khurda Road Jn",
-  "TALA":"Talcher","ANGL":"Angul","JSG":"Jharsuguda Jn","RJG":"Rajgangpur",
-  // Punjab & Haryana
-  "ASR":"Amritsar Jn","LDH":"Ludhiana Jn","UMB":"Ambala Cantt","CDG":"Chandigarh",
-  "FZR":"Firozpur Cantt","BTI":"Bathinda Jn","PTK":"Patiala","RPJ":"Rupnagar",
-  "SAS":"Sri Anandpur Sahib","MOR":"Morinda","KLK":"Kalka","NRW":"Narwana",
-  "HNS":"Hansi","HSR":"Hisar","JND":"Jind Jn","KRK":"Kurukshetra Jn",
-  // Himachal Pradesh & J&K
-  "JAT":"Jammu Tawi","UHP":"Udhampur","SVDK":"Shri Mata Vaishno Devi Katra",
-  "PTK":"Pathankot Cantt","SML":"Shimla","KLK":"Kalka","AMD":"Amb Andaura",
-  // Assam & NE
-  "GHY":"Guwahati","DBRG":"Dibrugarh","SCL":"Silchar","AGTL":"Agartala",
-  "KYQ":"Kamakhya","LMG":"Lumding Jn","JTTN":"Jiribam","RNY":"Rangiya Jn",
-  "MXN":"Mariani Jn","SMJN":"Sibsagar Town","NBQ":"New Bongaigaon",
-  "RSKT":"Rangapara North","TSK":"Tinsukia Jn","DLB":"Dimapur",
-  // Uttarakhand
-  "DDN":"Dehradun","HW":"Haridwar Jn","RKE":"Rishikesh","KB":"Kathgodam",
-  "LKU":"Lalkuan","RMR":"Ramnagar","TDL":"Tanakpur","KGM":"Kashipur",
-  // Chhattisgarh
-  "R":"Raipur Jn","BSP":"Bilaspur Jn","DRZ":"Durg","APR":"Ambikapur",
-  "RIG":"Rajnandgaon","CPH":"Champa","CPX":"Korba","KRDL":"Katghora",
-  // Goa
-  "MAO":"Madgaon","VASCO":"Vasco Da Gama","LD":"Londa Jn","CNB":"Calem"
-};
-function getStationName(code) {
-  if (!code) return '';
-  const c = code.trim().toUpperCase();
-  return STATIONS[c] ? `${STATIONS[c]} (${c})` : code;
-}
+    // ── PNR ────────────────────────────────────────────────────────
+    function getPillClass(s) {
+      if (!s) return 'pill-unk';
+      s = s.toUpperCase();
+      if (s.startsWith('CNF') || s.startsWith('CONFIRM')) return 'pill-cnf';
+      if (s.startsWith('WL') || s.startsWith('RLWL') || s.startsWith('GNWL')) return 'pill-wl';
+      if (s.startsWith('CAN')) return 'pill-can';
+      return 'pill-unk';
+    }
+    function errBox(title, msg) {
+      return `<div class="error-box"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div><div class="error-title">${title}</div><div class="error-msg">${msg}</div></div></div>`;
+    }
 
-// ── Tabs ────────────────────────────────────────────────────────
-function switchTab(tab) {
-  const tabs = ['pnr','trains','live'];
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', tabs[i]===tab));
-  tabs.forEach(t => document.getElementById('tab-'+t).classList.toggle('active', t===tab));
-}
-
-// ── PNR ────────────────────────────────────────────────────────
-function getPillClass(s) {
-  if (!s) return 'pill-unk';
-  s = s.toUpperCase();
-  if (s.startsWith('CNF')||s.startsWith('CONFIRM')) return 'pill-cnf';
-  if (s.startsWith('WL')||s.startsWith('RLWL')||s.startsWith('GNWL')) return 'pill-wl';
-  if (s.startsWith('CAN')) return 'pill-can';
-  return 'pill-unk';
-}
-function errBox(title, msg) {
-  return `<div class="error-box"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div><div class="error-title">${title}</div><div class="error-msg">${msg}</div></div></div>`;
-}
-
-async function checkPNR() {
-  const pnr = document.getElementById('pnr').value.trim();
-  const btn = document.getElementById('checkBtn');
-  const result = document.getElementById('pnr-result');
-  if (pnr.length !== 10) { result.innerHTML = errBox('Invalid PNR','Please enter a valid 10-digit PNR number.'); return; }
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Checking...';
-  result.innerHTML = '';
-  try {
-    const res = await fetch(`/check?pnr=${pnr}`);
-    const data = await res.json();
-    if (data.error) { result.innerHTML = errBox('Error', data.error); return; }
-    const d = data.data || data;
-    const passengers = d.passengerList || d.Passangers || d.Passengers || [];
-    const passengerRows = passengers.map((p,i) => {
-      const cur = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || 'Unknown';
-      const booked = p.bookingStatusDetails || p.BookingStatus || '—';
-      return `<div class="passenger-row"><div><div class="p-name">Passenger ${p.passengerSerialNumber||(i+1)}</div><div class="p-booking">Booked: ${booked}</div></div><span class="status-pill ${getPillClass(cur)}">${cur}</span></div>`;
-    }).join('');
-    const trainName = d.trainName||d.TrainName||'Unknown Train';
-    const trainNo = d.trainNumber||d.TrainNumber||'—';
-    const jClass = d.journeyClass||d.JourneyClass||'—';
-    const from = d.boardingPoint||d.sourceStation||d.From||'—';
-    const to = d.destinationStation||d.To||'—';
-    const date = d.dateOfJourney||d.JourneyDate||'—';
-    const chart = d.chartStatus||d.ChatPrepared||'';
-    const isWL = d.isWL==='Y';
-    const fare = d.bookingFare?`₹${d.bookingFare}`:'—';
-    result.innerHTML = `
+    async function checkPNR() {
+      const pnr = document.getElementById('pnr').value.trim();
+      const btn = document.getElementById('checkBtn');
+      const result = document.getElementById('pnr-result');
+      if (pnr.length !== 10) { result.innerHTML = errBox('Invalid PNR', 'Please enter a valid 10-digit PNR number.'); return; }
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Checking...';
+      result.innerHTML = '';
+      try {
+        const res = await fetch(`/check?pnr=${pnr}`);
+        const data = await res.json();
+        if (data.error) { result.innerHTML = errBox('Error', data.error); return; }
+        const d = data.data || data;
+        const passengers = d.passengerList || d.Passangers || d.Passengers || [];
+        const passengerRows = passengers.map((p, i) => {
+          const cur = p.currentStatusDetails || p.currentStatus || p.CurrentStatus || 'Unknown';
+          const booked = p.bookingStatusDetails || p.BookingStatus || '—';
+          return `<div class="passenger-row"><div><div class="p-name">Passenger ${p.passengerSerialNumber || (i + 1)}</div><div class="p-booking">Booked: ${booked}</div></div><span class="status-pill ${getPillClass(cur)}">${cur}</span></div>`;
+        }).join('');
+        const trainName = d.trainName || d.TrainName || 'Unknown Train';
+        const trainNo = d.trainNumber || d.TrainNumber || '—';
+        const jClass = d.journeyClass || d.JourneyClass || '—';
+        const from = d.boardingPoint || d.sourceStation || d.From || '—';
+        const to = d.destinationStation || d.To || '—';
+        const date = d.dateOfJourney || d.JourneyDate || '—';
+        const chart = d.chartStatus || d.ChatPrepared || '';
+        const isWL = d.isWL === 'Y';
+        const fare = d.bookingFare ? `₹${d.bookingFare}` : '—';
+        result.innerHTML = `
       <div class="result" style="margin-top:1rem;">
         <div class="result-header">
           <div class="train-icon"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 18v2M18 18v2M2 11h20M8 6V4M16 6V4"/></svg></div>
@@ -442,201 +955,201 @@ async function checkPNR() {
           <div class="jmid"><div class="track"><div class="dot"></div><div class="line"></div><div class="dot"></div></div><div class="cls-badge">${jClass}</div></div>
           <div class="stn-end"><div class="stn-name">${getStationName(to)}</div><div class="stn-code">Destination</div></div>
         </div>
-        <div class="journey-date">📅 ${date} · Chart: ${chart||'Not prepared'}</div>
+        <div class="journey-date">📅 ${date} · Chart: ${chart || 'Not prepared'}</div>
         <div class="stats">
-          <div class="stat"><div class="stat-label">WL Status</div><div class="stat-value" style="color:${isWL?'#854d0e':'#166534'}">${isWL?'Waitlisted':'Confirmed'}</div></div>
+          <div class="stat"><div class="stat-label">WL Status</div><div class="stat-value" style="color:${isWL ? '#854d0e' : '#166534'}">${isWL ? 'Waitlisted' : 'Confirmed'}</div></div>
           <div class="stat" style="text-align:center"><div class="stat-label">Passengers</div><div class="stat-value">${passengers.length}</div></div>
           <div class="stat" style="text-align:right"><div class="stat-label">Fare</div><div class="stat-value">${fare}</div></div>
         </div>
         <div class="sec-title">Passenger Status</div>
-        ${passengerRows||'<div style="font-size:0.82rem;color:#94a3b8;">No passenger data.</div>'}
+        ${passengerRows || '<div style="font-size:0.82rem;color:#94a3b8;">No passenger data.</div>'}
       </div>`;
-  } catch(err) {
-    result.innerHTML = errBox('Network error', err.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Check PNR Status';
-  }
-}
+      } catch (err) {
+        result.innerHTML = errBox('Network error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Check PNR Status';
+      }
+    }
 
-// ── Local Station Database (no API needed) ──────────────────────
-const STATION_DB = [
-  // Delhi & NCR
-  ["NDLS","New Delhi"],["NZM","Hazrat Nizamuddin"],["DLI","Old Delhi"],
-  ["DEE","Delhi Sarai Rohilla"],["ANVT","Anand Vihar Terminal"],["DSA","Delhi Shahdara"],
-  ["GZB","Ghaziabad"],["FDB","Faridabad"],["GGN","Gurugram"],
-  // UP
-  ["CNB","Kanpur Central"],["LKO","Lucknow Charbagh"],["LJN","Lucknow NR"],
-  ["BSB","Varanasi Jn"],["PRYJ","Prayagraj Jn"],["ALD","Allahabad Jn"],
-  ["AGC","Agra Cantt"],["AF","Agra Fort"],["MTJ","Mathura Jn"],
-  ["GWL","Gwalior Jn"],["JHS","Jhansi Jn"],["ALJN","Aligarh Jn"],
-  ["MB","Moradabad"],["BE","Bareilly Jn"],["GKP","Gorakhpur Jn"],
-  ["DDN","Dehradun"],["HW","Haridwar Jn"],["RKE","Rishikesh"],
-  ["MZP","Mirzapur"],["MGS","Mughal Sarai"],["DDU","Pt DD Upadhyaya Jn"],
-  ["BXR","Buxar"],["SLN","Sultanpur"],["MUV","Manduadih"],["ETW","Etawah"],
-  ["BNKI","Barabanki Jn"],["FZD","Faizabad Jn"],["AMH","Azamgarh"],
-  ["BUI","Ballia"],["MAU","Mau Jn"],["JNU","Jaunpur Jn"],
-  // Rajasthan
-  ["JP","Jaipur Jn"],["AII","Ajmer Jn"],["UDZ","Udaipur City"],
-  ["BKN","Bikaner Jn"],["JU","Jodhpur Jn"],["KOTA","Kota Jn"],
-  ["SWM","Sawai Madhopur"],["RTM","Ratlam Jn"],["BHL","Bharatpur Jn"],
-  ["GGC","Gangapur City"],["AF","Abu Road"],["PNU","Pali Marwar"],
-  // MP
-  ["BPL","Bhopal Jn"],["HBJ","Habibganj"],["INDB","Indore Jn"],
-  ["UJN","Ujjain Jn"],["NGP","Nagpur Jn"],["JBP","Jabalpur Jn"],
-  ["ET","Itarsi Jn"],["KNW","Khandwa Jn"],["GNA","Guna"],
-  ["BIN","Bina Jn"],["SGO","Sagar"],["NKJ","New Katni Jn"],
-  ["STN","Satna"],["RWA","Rewa"],["KTE","Katni Jn"],
-  // Gujarat
-  ["ADI","Ahmedabad Jn"],["ST","Surat"],["BRC","Vadodara Jn"],
-  ["RJT","Rajkot Jn"],["BVP","Bharuch Jn"],["VAPI","Vapi"],
-  ["GDT","Gandhinagar Capital"],["MHV","Mehsana Jn"],["PBR","Porbandar"],
-  ["JND","Jamnagar"],["BHJ","Bhuj"],["VRL","Veraval"],["OKHA","Okha"],
-  ["DWK","Dwarka"],["SKH","Surendranagar"],["NDB","Nadiad Jn"],
-  // Maharashtra
-  ["CSTM","Mumbai CST"],["BCT","Mumbai Central"],["LTT","Lokmanya Tilak Terminal"],
-  ["DR","Dadar"],["PNVL","Panvel"],["KYN","Kalyan Jn"],["BVI","Borivali"],
-  ["THANE","Thane"],["BSL","Bhusaval Jn"],["PUNE","Pune Jn"],
-  ["MRJ","Miraj Jn"],["NK","Nashik Road"],["MMR","Manmad Jn"],
-  ["AK","Akola Jn"],["AMI","Amravati"],["NED","Nanded"],
-  ["AWB","Aurangabad"],["KOP","Kolhapur"],["SUR","Solapur"],
-  ["LNL","Lonavala"],["NGP","Nagpur"],["WR","Wardha Jn"],
-  // Karnataka
-  ["SBC","KSR Bengaluru"],["YPR","Yesvantpur Jn"],["BNC","Bengaluru Cantt"],
-  ["KJM","Krishnarajapuram"],["MAQ","Mangaluru Central"],["MAJN","Mangaluru Jn"],
-  ["UBL","Hubballi Jn"],["DWR","Dharwad"],["BGM","Belagavi"],
-  ["GDG","Gadag Jn"],["BAY","Ballari Jn"],["GTL","Guntakal Jn"],
-  ["MYS","Mysuru Jn"],["HAS","Hassan"],["TK","Tumkuru"],
-  ["DVG","Davangere"],["KGI","Kalaburagi"],["ASK","Arsikere Jn"],
-  // Tamil Nadu
-  ["MAS","Chennai Central"],["MS","Chennai Egmore"],["CBE","Coimbatore Jn"],
-  ["MDU","Madurai Jn"],["TEN","Tirunelveli"],["NCJ","Nagercoil Jn"],
-  ["SA","Salem Jn"],["ED","Erode Jn"],["KPD","Katpadi Jn"],
-  ["JTJ","Jolarpettai"],["TJ","Thanjavur Jn"],["TPJ","Tiruchirappalli Jn"],
-  ["RMM","Rameswaram"],["TUT","Thoothukudi"],["VM","Villupuram Jn"],
-  ["AJJ","Arakkonam Jn"],["GDR","Gudur Jn"],["CGL","Chengalpattu"],
-  ["POD","Puducherry"],["TPT","Tirupati"],
-  // Kerala
-  ["TVC","Thiruvananthapuram Central"],["QLN","Kollam Jn"],["ALLP","Alappuzha"],
-  ["ERS","Ernakulam Jn"],["AWY","Aluva"],["TCR","Thrissur"],
-  ["SRR","Shoranur Jn"],["CLT","Kozhikode"],["CAN","Kannur"],
-  ["KZE","Kasaragod"],["VAD","Varkala Sivagiri"],["KTYM","Kottayam"],
-  ["PGT","Palakkad Jn"],
-  // Andhra & Telangana
-  ["SC","Secunderabad Jn"],["HYB","Hyderabad Deccan"],["KC","Kacheguda"],
-  ["NLR","Nellore"],["GNT","Guntur Jn"],["BZA","Vijayawada Jn"],
-  ["VSKP","Visakhapatnam"],["OGL","Ongole"],["RJY","Rajahmundry"],
-  ["VZM","Vizianagaram"],["GTL","Guntakal"],["WL","Warangal"],
-  ["KZJ","Kazipet Jn"],["NZB","Nizamabad"],["TPTY","Tirupati"],
-  // West Bengal
-  ["HWH","Howrah Jn"],["SDAH","Sealdah"],["KOAA","Kolkata"],
-  ["BWN","Barddhaman"],["DGR","Durgapur"],["ASN","Asansol Jn"],
-  ["KGP","Kharagpur Jn"],["MDN","Midnapore"],["MLDT","Malda Town"],
-  ["RPH","Rampur Hat"],["MUC","Malda Court"],
-  // Bihar & Jharkhand
-  ["PNBE","Patna Jn"],["PAT","Patna Jn"],["GAYA","Gaya Jn"],
-  ["MFP","Muzaffarpur Jn"],["SPJ","Samastipur Jn"],["DBG","Darbhanga Jn"],
-  ["BJU","Barauni Jn"],["BGP","Bhagalpur"],["DNR","Danapur"],
-  ["DHN","Dhanbad Jn"],["TATA","Tatanagar Jn"],["RNC","Ranchi"],
-  ["BKSC","Bokaro Steel City"],["HZB","Hazaribag Road"],["GMO","Gomoh Jn"],
-  ["JSG","Jharsuguda Jn"],["ROU","Rourkela"],["JAJ","Jasidih Jn"],
-  // Odisha
-  ["BBS","Bhubaneswar"],["CTC","Cuttack"],["PURI","Puri"],
-  ["SBP","Sambalpur Jn"],["BRGA","Berhampur"],["KUR","Khurda Road Jn"],
-  ["ANGL","Angul"],["BAM","Baripada"],
-  // Punjab & Haryana
-  ["ASR","Amritsar Jn"],["LDH","Ludhiana Jn"],["UMB","Ambala Cantt"],
-  ["CDG","Chandigarh"],["FZR","Firozpur Cantt"],["BTI","Bathinda Jn"],
-  ["PTK","Patiala"],["PNP","Panipat Jn"],["ROK","Rohtak Jn"],
-  ["HSR","Hisar"],["JND","Jind Jn"],["KLK","Kalka"],
-  // J&K & HP
-  ["JAT","Jammu Tawi"],["UHP","Udhampur"],["SVDK","Shri Mata Vaishno Devi Katra"],
-  ["SML","Shimla"],["AMD","Amb Andaura"],
-  // Assam & NE
-  ["GHY","Guwahati"],["DBRG","Dibrugarh"],["SCL","Silchar"],
-  ["AGTL","Agartala"],["KYQ","Kamakhya"],["LMG","Lumding Jn"],
-  ["NBQ","New Bongaigaon"],["TSK","Tinsukia Jn"],["RNY","Rangiya Jn"],
-  // Chhattisgarh
-  ["R","Raipur Jn"],["BSP","Bilaspur Jn"],["DRZ","Durg"],
-  ["RIG","Rajnandgaon"],["CPH","Champa"],["JSG","Jharsuguda Jn"],
-  // Uttarakhand
-  ["KB","Kathgodam"],["LKU","Lalkuan"],["RMR","Ramnagar"],["TDL","Tanakpur"],
-  // Goa
-  ["MAO","Madgaon"],["VASCO","Vasco Da Gama"],["LD","Londa Jn"],
-];
+    // ── Local Station Database (no API needed) ──────────────────────
+    const STATION_DB = [
+      // Delhi & NCR
+      ["NDLS", "New Delhi"], ["NZM", "Hazrat Nizamuddin"], ["DLI", "Old Delhi"],
+      ["DEE", "Delhi Sarai Rohilla"], ["ANVT", "Anand Vihar Terminal"], ["DSA", "Delhi Shahdara"],
+      ["GZB", "Ghaziabad"], ["FDB", "Faridabad"], ["GGN", "Gurugram"],
+      // UP
+      ["CNB", "Kanpur Central"], ["LKO", "Lucknow Charbagh"], ["LJN", "Lucknow NR"],
+      ["BSB", "Varanasi Jn"], ["PRYJ", "Prayagraj Jn"], ["ALD", "Allahabad Jn"],
+      ["AGC", "Agra Cantt"], ["AF", "Agra Fort"], ["MTJ", "Mathura Jn"],
+      ["GWL", "Gwalior Jn"], ["JHS", "Jhansi Jn"], ["ALJN", "Aligarh Jn"],
+      ["MB", "Moradabad"], ["BE", "Bareilly Jn"], ["GKP", "Gorakhpur Jn"],
+      ["DDN", "Dehradun"], ["HW", "Haridwar Jn"], ["RKE", "Rishikesh"],
+      ["MZP", "Mirzapur"], ["MGS", "Mughal Sarai"], ["DDU", "Pt DD Upadhyaya Jn"],
+      ["BXR", "Buxar"], ["SLN", "Sultanpur"], ["MUV", "Manduadih"], ["ETW", "Etawah"],
+      ["BNKI", "Barabanki Jn"], ["FZD", "Faizabad Jn"], ["AMH", "Azamgarh"],
+      ["BUI", "Ballia"], ["MAU", "Mau Jn"], ["JNU", "Jaunpur Jn"],
+      // Rajasthan
+      ["JP", "Jaipur Jn"], ["AII", "Ajmer Jn"], ["UDZ", "Udaipur City"],
+      ["BKN", "Bikaner Jn"], ["JU", "Jodhpur Jn"], ["KOTA", "Kota Jn"],
+      ["SWM", "Sawai Madhopur"], ["RTM", "Ratlam Jn"], ["BHL", "Bharatpur Jn"],
+      ["GGC", "Gangapur City"], ["AF", "Abu Road"], ["PNU", "Pali Marwar"],
+      // MP
+      ["BPL", "Bhopal Jn"], ["HBJ", "Habibganj"], ["INDB", "Indore Jn"],
+      ["UJN", "Ujjain Jn"], ["NGP", "Nagpur Jn"], ["JBP", "Jabalpur Jn"],
+      ["ET", "Itarsi Jn"], ["KNW", "Khandwa Jn"], ["GNA", "Guna"],
+      ["BIN", "Bina Jn"], ["SGO", "Sagar"], ["NKJ", "New Katni Jn"],
+      ["STN", "Satna"], ["RWA", "Rewa"], ["KTE", "Katni Jn"],
+      // Gujarat
+      ["ADI", "Ahmedabad Jn"], ["ST", "Surat"], ["BRC", "Vadodara Jn"],
+      ["RJT", "Rajkot Jn"], ["BVP", "Bharuch Jn"], ["VAPI", "Vapi"],
+      ["GDT", "Gandhinagar Capital"], ["MHV", "Mehsana Jn"], ["PBR", "Porbandar"],
+      ["JND", "Jamnagar"], ["BHJ", "Bhuj"], ["VRL", "Veraval"], ["OKHA", "Okha"],
+      ["DWK", "Dwarka"], ["SKH", "Surendranagar"], ["NDB", "Nadiad Jn"],
+      // Maharashtra
+      ["CSTM", "Mumbai CST"], ["BCT", "Mumbai Central"], ["LTT", "Lokmanya Tilak Terminal"],
+      ["DR", "Dadar"], ["PNVL", "Panvel"], ["KYN", "Kalyan Jn"], ["BVI", "Borivali"],
+      ["THANE", "Thane"], ["BSL", "Bhusaval Jn"], ["PUNE", "Pune Jn"],
+      ["MRJ", "Miraj Jn"], ["NK", "Nashik Road"], ["MMR", "Manmad Jn"],
+      ["AK", "Akola Jn"], ["AMI", "Amravati"], ["NED", "Nanded"],
+      ["AWB", "Aurangabad"], ["KOP", "Kolhapur"], ["SUR", "Solapur"],
+      ["LNL", "Lonavala"], ["NGP", "Nagpur"], ["WR", "Wardha Jn"],
+      // Karnataka
+      ["SBC", "KSR Bengaluru"], ["YPR", "Yesvantpur Jn"], ["BNC", "Bengaluru Cantt"],
+      ["KJM", "Krishnarajapuram"], ["MAQ", "Mangaluru Central"], ["MAJN", "Mangaluru Jn"],
+      ["UBL", "Hubballi Jn"], ["DWR", "Dharwad"], ["BGM", "Belagavi"],
+      ["GDG", "Gadag Jn"], ["BAY", "Ballari Jn"], ["GTL", "Guntakal Jn"],
+      ["MYS", "Mysuru Jn"], ["HAS", "Hassan"], ["TK", "Tumkuru"],
+      ["DVG", "Davangere"], ["KGI", "Kalaburagi"], ["ASK", "Arsikere Jn"],
+      // Tamil Nadu
+      ["MAS", "Chennai Central"], ["MS", "Chennai Egmore"], ["CBE", "Coimbatore Jn"],
+      ["MDU", "Madurai Jn"], ["TEN", "Tirunelveli"], ["NCJ", "Nagercoil Jn"],
+      ["SA", "Salem Jn"], ["ED", "Erode Jn"], ["KPD", "Katpadi Jn"],
+      ["JTJ", "Jolarpettai"], ["TJ", "Thanjavur Jn"], ["TPJ", "Tiruchirappalli Jn"],
+      ["RMM", "Rameswaram"], ["TUT", "Thoothukudi"], ["VM", "Villupuram Jn"],
+      ["AJJ", "Arakkonam Jn"], ["GDR", "Gudur Jn"], ["CGL", "Chengalpattu"],
+      ["POD", "Puducherry"], ["TPT", "Tirupati"],
+      // Kerala
+      ["TVC", "Thiruvananthapuram Central"], ["QLN", "Kollam Jn"], ["ALLP", "Alappuzha"],
+      ["ERS", "Ernakulam Jn"], ["AWY", "Aluva"], ["TCR", "Thrissur"],
+      ["SRR", "Shoranur Jn"], ["CLT", "Kozhikode"], ["CAN", "Kannur"],
+      ["KZE", "Kasaragod"], ["VAD", "Varkala Sivagiri"], ["KTYM", "Kottayam"],
+      ["PGT", "Palakkad Jn"],
+      // Andhra & Telangana
+      ["SC", "Secunderabad Jn"], ["HYB", "Hyderabad Deccan"], ["KC", "Kacheguda"],
+      ["NLR", "Nellore"], ["GNT", "Guntur Jn"], ["BZA", "Vijayawada Jn"],
+      ["VSKP", "Visakhapatnam"], ["OGL", "Ongole"], ["RJY", "Rajahmundry"],
+      ["VZM", "Vizianagaram"], ["GTL", "Guntakal"], ["WL", "Warangal"],
+      ["KZJ", "Kazipet Jn"], ["NZB", "Nizamabad"], ["TPTY", "Tirupati"],
+      // West Bengal
+      ["HWH", "Howrah Jn"], ["SDAH", "Sealdah"], ["KOAA", "Kolkata"],
+      ["BWN", "Barddhaman"], ["DGR", "Durgapur"], ["ASN", "Asansol Jn"],
+      ["KGP", "Kharagpur Jn"], ["MDN", "Midnapore"], ["MLDT", "Malda Town"],
+      ["RPH", "Rampur Hat"], ["MUC", "Malda Court"],
+      // Bihar & Jharkhand
+      ["PNBE", "Patna Jn"], ["PAT", "Patna Jn"], ["GAYA", "Gaya Jn"],
+      ["MFP", "Muzaffarpur Jn"], ["SPJ", "Samastipur Jn"], ["DBG", "Darbhanga Jn"],
+      ["BJU", "Barauni Jn"], ["BGP", "Bhagalpur"], ["DNR", "Danapur"],
+      ["DHN", "Dhanbad Jn"], ["TATA", "Tatanagar Jn"], ["RNC", "Ranchi"],
+      ["BKSC", "Bokaro Steel City"], ["HZB", "Hazaribag Road"], ["GMO", "Gomoh Jn"],
+      ["JSG", "Jharsuguda Jn"], ["ROU", "Rourkela"], ["JAJ", "Jasidih Jn"],
+      // Odisha
+      ["BBS", "Bhubaneswar"], ["CTC", "Cuttack"], ["PURI", "Puri"],
+      ["SBP", "Sambalpur Jn"], ["BRGA", "Berhampur"], ["KUR", "Khurda Road Jn"],
+      ["ANGL", "Angul"], ["BAM", "Baripada"],
+      // Punjab & Haryana
+      ["ASR", "Amritsar Jn"], ["LDH", "Ludhiana Jn"], ["UMB", "Ambala Cantt"],
+      ["CDG", "Chandigarh"], ["FZR", "Firozpur Cantt"], ["BTI", "Bathinda Jn"],
+      ["PTK", "Patiala"], ["PNP", "Panipat Jn"], ["ROK", "Rohtak Jn"],
+      ["HSR", "Hisar"], ["JND", "Jind Jn"], ["KLK", "Kalka"],
+      // J&K & HP
+      ["JAT", "Jammu Tawi"], ["UHP", "Udhampur"], ["SVDK", "Shri Mata Vaishno Devi Katra"],
+      ["SML", "Shimla"], ["AMD", "Amb Andaura"],
+      // Assam & NE
+      ["GHY", "Guwahati"], ["DBRG", "Dibrugarh"], ["SCL", "Silchar"],
+      ["AGTL", "Agartala"], ["KYQ", "Kamakhya"], ["LMG", "Lumding Jn"],
+      ["NBQ", "New Bongaigaon"], ["TSK", "Tinsukia Jn"], ["RNY", "Rangiya Jn"],
+      // Chhattisgarh
+      ["R", "Raipur Jn"], ["BSP", "Bilaspur Jn"], ["DRZ", "Durg"],
+      ["RIG", "Rajnandgaon"], ["CPH", "Champa"], ["JSG", "Jharsuguda Jn"],
+      // Uttarakhand
+      ["KB", "Kathgodam"], ["LKU", "Lalkuan"], ["RMR", "Ramnagar"], ["TDL", "Tanakpur"],
+      // Goa
+      ["MAO", "Madgaon"], ["VASCO", "Vasco Da Gama"], ["LD", "Londa Jn"],
+    ];
 
-// ── Station Autocomplete (local, instant, no API) ───────────────
-function searchStation(side) {
-  const input = document.getElementById(side+'Input').value.trim().toLowerCase();
-  const list = document.getElementById(side+'List');
-  if (input.length < 2) { list.style.display='none'; return; }
+    // ── Station Autocomplete (local, instant, no API) ───────────────
+    function searchStation(side) {
+      const input = document.getElementById(side + 'Input').value.trim().toLowerCase();
+      const list = document.getElementById(side + 'List');
+      if (input.length < 2) { list.style.display = 'none'; return; }
 
-  const results = STATION_DB.filter(([code, name]) =>
-    name.toLowerCase().includes(input) || code.toLowerCase().includes(input)
-  ).slice(0, 7);
+      const results = STATION_DB.filter(([code, name]) =>
+        name.toLowerCase().includes(input) || code.toLowerCase().includes(input)
+      ).slice(0, 7);
 
-  if (!results.length) { list.style.display='none'; return; }
+      if (!results.length) { list.style.display = 'none'; return; }
 
-  list.innerHTML = results.map(([code, name]) =>
-    `<div class="autocomplete-item" onclick="selectStation('${side}','${code}','${name.replace(/'/g,"\\'")}')">
+      list.innerHTML = results.map(([code, name]) =>
+        `<div class="autocomplete-item" onclick="selectStation('${side}','${code}','${name.replace(/'/g, "\\'")}')">
       <span class="station-badge">${code}</span>
       <span>${name}</span>
     </div>`
-  ).join('');
-  list.style.display = 'block';
-}
+      ).join('');
+      list.style.display = 'block';
+    }
 
-function selectStation(side, code, name) {
-  document.getElementById(side+'Input').value = name;
-  document.getElementById(side+'Code').value = code;
-  document.getElementById(side+'List').style.display = 'none';
-}
+    function selectStation(side, code, name) {
+      document.getElementById(side + 'Input').value = name;
+      document.getElementById(side + 'Code').value = code;
+      document.getElementById(side + 'List').style.display = 'none';
+    }
 
-document.addEventListener('click', e => {
-  if (!e.target.closest('.form-group')) {
-    document.getElementById('fromList').style.display='none';
-    document.getElementById('toList').style.display='none';
-  }
-});
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.form-group')) {
+        document.getElementById('fromList').style.display = 'none';
+        document.getElementById('toList').style.display = 'none';
+      }
+    });
 
-// ── Train Search ────────────────────────────────────────────────
-async function searchTrains() {
-  const fromCode = document.getElementById('fromCode').value;
-  const toCode = document.getElementById('toCode').value;
-  const result = document.getElementById('train-result');
-  const btn = document.getElementById('searchBtn');
+    // ── Train Search ────────────────────────────────────────────────
+    async function searchTrains() {
+      const fromCode = document.getElementById('fromCode').value;
+      const toCode = document.getElementById('toCode').value;
+      const result = document.getElementById('train-result');
+      const btn = document.getElementById('searchBtn');
 
-  if (!fromCode) { result.innerHTML = errBox('Missing station','Please select a From station from the dropdown.'); return; }
-  if (!toCode)   { result.innerHTML = errBox('Missing station','Please select a To station from the dropdown.'); return; }
+      if (!fromCode) { result.innerHTML = errBox('Missing station', 'Please select a From station from the dropdown.'); return; }
+      if (!toCode) { result.innerHTML = errBox('Missing station', 'Please select a To station from the dropdown.'); return; }
 
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Searching...';
-  result.innerHTML = '';
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Searching...';
+      result.innerHTML = '';
 
-  function parseDays(days) {
-    if (!days) return '';
-    const labels = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-    return days.split('').map((d,i) => d==='1'
-      ? `<span style="color:#2563eb;font-weight:700;">${labels[i]}</span>`
-      : `<span style="color:#cbd5e1;">${labels[i]}</span>`
-    ).join(' ');
-  }
+      function parseDays(days) {
+        if (!days) return '';
+        const labels = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        return days.split('').map((d, i) => d === '1'
+          ? `<span style="color:#2563eb;font-weight:700;">${labels[i]}</span>`
+          : `<span style="color:#cbd5e1;">${labels[i]}</span>`
+        ).join(' ');
+      }
 
-  try {
-    const res = await fetch(`/trains_between?from=${fromCode}&to=${toCode}`);
-    const data = await res.json();
-    if (data.error) { result.innerHTML = errBox('Error', data.error); return; }
-    const trains = (data.data && data.data.trains) ? data.data.trains : [];
-    if (!trains.length) { result.innerHTML = errBox('No trains found','No trains found between these stations.'); return; }
-    result.innerHTML = `
+      try {
+        const res = await fetch(`/trains_between?from=${fromCode}&to=${toCode}`);
+        const data = await res.json();
+        if (data.error) { result.innerHTML = errBox('Error', data.error); return; }
+        const trains = (data.data && data.data.trains) ? data.data.trains : [];
+        if (!trains.length) { result.innerHTML = errBox('No trains found', 'No trains found between these stations.'); return; }
+        result.innerHTML = `
       <div class="results-count" style="margin-top:1rem;">${data.data?.count || trains.length} trains found</div>
       <div class="train-list">
         ${trains.map(t => {
-          const num  = t.train?.number || '—';
+          const num = t.train?.number || '—';
           const name = t.train?.name || 'Unknown Train';
-          const dep  = t['from']?.departure || '—';
-          const arr  = t['to']?.arrival || '—';
-          const dur  = t.duration ? `${Math.floor(t.duration/60)}h ${t.duration%60}m` : '—';
+          const dep = t['from']?.departure || '—';
+          const arr = t['to']?.arrival || '—';
+          const dur = t.duration ? `${Math.floor(t.duration / 60)}h ${t.duration % 60}m` : '—';
           const type = t.train?.type || '';
           const days = t.train?.runDays || [];
           return `
@@ -655,207 +1168,207 @@ async function searchTrains() {
               <div class="tc-dot"></div>
               <span class="tc-time">${arr}</span>
             </div>
-            <div style="font-size:0.72rem;color:#64748b;">${Array.isArray(days) ? days.map(d=>d.charAt(0).toUpperCase()+d.slice(1,3)).join(' · ') : ''}</div>
-            <button onclick="showTrainInfo('${num}','${name.replace(/'/g,"\\'")}')" style="margin-top:8px;padding:4px 12px;background:#eff6ff;color:#2563eb;border:none;border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;">● Live Status</button>
+            <div style="font-size:0.72rem;color:#64748b;">${Array.isArray(days) ? days.map(d => d.charAt(0).toUpperCase() + d.slice(1, 3)).join(' · ') : ''}</div>
+            <button onclick="showTrainInfo('${num}','${name.replace(/'/g, "\\'")}')" style="margin-top:8px;padding:4px 12px;background:#eff6ff;color:#2563eb;border:none;border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;">● Live Status</button>
           </div>`;
         }).join('')}
       </div>`;
-  } catch(err) {
-    result.innerHTML = errBox('Network error', err.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search Trains';
-  }
-}
+      } catch (err) {
+        result.innerHTML = errBox('Network error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg> Search Trains';
+      }
+    }
 
-function showTrainInfo(number, name) {
-  switchTab('live');
-  document.getElementById('liveTrainInput').value = number;
-  checkLiveStatus();
-}
+    function showTrainInfo(number, name) {
+      switchTab('live');
+      document.getElementById('liveTrainInput').value = number;
+      checkLiveStatus();
+    }
 
-// ── Train name search for live status ──────────────────────────
-const TRAIN_DB = [
-  ["12301","Howrah Rajdhani Express"],["12302","New Delhi Rajdhani Express"],
-  ["12303","Poorva Express"],["12304","Poorva Express"],
-  ["12305","Howrah Rajdhani Express"],["12306","Howrah Rajdhani Express"],
-  ["12309","Rajendra Nagar Patna Rajdhani"],["12310","Rajendra Nagar Patna Rajdhani"],
-  ["12311","Kalka Mail"],["12312","Kalka Mail"],
-  ["12313","Sealdah Rajdhani Express"],["12314","Sealdah Rajdhani Express"],
-  ["12381","Poorva Express"],["12382","Poorva Express"],
-  ["12559","Shiv Ganga Express"],["12560","Shiv Ganga Express"],
-  ["12561","Swatantrata Senani Express"],["12562","Swatantrata Senani Express"],
-  ["12565","Bihar Sampark Kranti Express"],["12566","Bihar Sampark Kranti Express"],
-  ["12569","Jaynagar Humsafar Express"],["12570","Jaynagar Humsafar Express"],
-  ["12801","Purushottam Express"],["12802","Purushottam Express"],
-  ["12951","Mumbai Rajdhani Express"],["12952","Mumbai Rajdhani Express"],
-  ["12953","August Kranti Rajdhani"],["12954","August Kranti Rajdhani"],
-  ["12957","Swarna Jayanti Rajdhani"],["12958","Swarna Jayanti Rajdhani"],
-  ["12001","Bhopal Shatabdi"],["12002","Rani Kamalapati Shatabdi"],
-  ["12003","Lucknow Shatabdi"],["12004","Lucknow Shatabdi"],
-  ["12009","Mumbai Shatabdi"],["12010","Mumbai Shatabdi"],
-  ["12011","Kalka Shatabdi"],["12012","Kalka Shatabdi"],
-  ["12013","Amritsar Shatabdi"],["12014","Amritsar Shatabdi"],
-  ["12015","Ajmer Shatabdi"],["12016","Ajmer Shatabdi"],
-  ["12017","Dehradun Shatabdi"],["12018","Dehradun Shatabdi"],
-  ["12019","Howrah Shatabdi"],["12020","Howrah Shatabdi"],
-  ["12137","Punjab Mail"],["12138","Punjab Mail"],
-  ["12615","Grand Trunk Express"],["12616","Grand Trunk Express"],
-  ["12621","Tamil Nadu Express"],["12622","Tamil Nadu Express"],
-  ["12625","Kerala Express"],["12626","Kerala Express"],
-  ["12627","Karnataka Express"],["12628","Karnataka Express"],
-  ["12641","Thirukkural Express"],["12642","Thirukkural Express"],
-  ["12643","Nonstop Nizamuddin Express"],["12644","Nonstop Nizamuddin Express"],
-  ["12645","Millennium Express"],["12646","Millennium Express"],
-  ["12649","Karnataka Sampark Kranti"],["12650","YPR S Kranti Express"],
-  ["12679","Chennai Coimbatore Intercity"],["12680","Chennai Coimbatore Intercity"],
-  ["12723","Telangana Express"],["12724","Telangana Express"],
-  ["12759","Charminar SF Express"],["12760","Charminar SF Express"],
-  ["12801","Purushottam SF Express"],["12802","Purushottam SF Express"],
-  ["11077","Jhelum Express"],["11078","Jhelum Express"],
-  ["11057","Mumbai CSMT Express"],["11058","Mumbai CSMT Express"],
-  ["12419","Gomti Express"],["12420","Gomti Express"],
-  ["12503","Agartala Humsafar"],["12504","Agartala Humsafar"],
-  ["12505","North East Express"],["12506","North East Express"],
-  ["12507","Guwahati Express"],["12508","Guwahati Express"],
-];
+    // ── Train name search for live status ──────────────────────────
+    const TRAIN_DB = [
+      ["12301", "Howrah Rajdhani Express"], ["12302", "New Delhi Rajdhani Express"],
+      ["12303", "Poorva Express"], ["12304", "Poorva Express"],
+      ["12305", "Howrah Rajdhani Express"], ["12306", "Howrah Rajdhani Express"],
+      ["12309", "Rajendra Nagar Patna Rajdhani"], ["12310", "Rajendra Nagar Patna Rajdhani"],
+      ["12311", "Kalka Mail"], ["12312", "Kalka Mail"],
+      ["12313", "Sealdah Rajdhani Express"], ["12314", "Sealdah Rajdhani Express"],
+      ["12381", "Poorva Express"], ["12382", "Poorva Express"],
+      ["12559", "Shiv Ganga Express"], ["12560", "Shiv Ganga Express"],
+      ["12561", "Swatantrata Senani Express"], ["12562", "Swatantrata Senani Express"],
+      ["12565", "Bihar Sampark Kranti Express"], ["12566", "Bihar Sampark Kranti Express"],
+      ["12569", "Jaynagar Humsafar Express"], ["12570", "Jaynagar Humsafar Express"],
+      ["12801", "Purushottam Express"], ["12802", "Purushottam Express"],
+      ["12951", "Mumbai Rajdhani Express"], ["12952", "Mumbai Rajdhani Express"],
+      ["12953", "August Kranti Rajdhani"], ["12954", "August Kranti Rajdhani"],
+      ["12957", "Swarna Jayanti Rajdhani"], ["12958", "Swarna Jayanti Rajdhani"],
+      ["12001", "Bhopal Shatabdi"], ["12002", "Rani Kamalapati Shatabdi"],
+      ["12003", "Lucknow Shatabdi"], ["12004", "Lucknow Shatabdi"],
+      ["12009", "Mumbai Shatabdi"], ["12010", "Mumbai Shatabdi"],
+      ["12011", "Kalka Shatabdi"], ["12012", "Kalka Shatabdi"],
+      ["12013", "Amritsar Shatabdi"], ["12014", "Amritsar Shatabdi"],
+      ["12015", "Ajmer Shatabdi"], ["12016", "Ajmer Shatabdi"],
+      ["12017", "Dehradun Shatabdi"], ["12018", "Dehradun Shatabdi"],
+      ["12019", "Howrah Shatabdi"], ["12020", "Howrah Shatabdi"],
+      ["12137", "Punjab Mail"], ["12138", "Punjab Mail"],
+      ["12615", "Grand Trunk Express"], ["12616", "Grand Trunk Express"],
+      ["12621", "Tamil Nadu Express"], ["12622", "Tamil Nadu Express"],
+      ["12625", "Kerala Express"], ["12626", "Kerala Express"],
+      ["12627", "Karnataka Express"], ["12628", "Karnataka Express"],
+      ["12641", "Thirukkural Express"], ["12642", "Thirukkural Express"],
+      ["12643", "Nonstop Nizamuddin Express"], ["12644", "Nonstop Nizamuddin Express"],
+      ["12645", "Millennium Express"], ["12646", "Millennium Express"],
+      ["12649", "Karnataka Sampark Kranti"], ["12650", "YPR S Kranti Express"],
+      ["12679", "Chennai Coimbatore Intercity"], ["12680", "Chennai Coimbatore Intercity"],
+      ["12723", "Telangana Express"], ["12724", "Telangana Express"],
+      ["12759", "Charminar SF Express"], ["12760", "Charminar SF Express"],
+      ["12801", "Purushottam SF Express"], ["12802", "Purushottam SF Express"],
+      ["11077", "Jhelum Express"], ["11078", "Jhelum Express"],
+      ["11057", "Mumbai CSMT Express"], ["11058", "Mumbai CSMT Express"],
+      ["12419", "Gomti Express"], ["12420", "Gomti Express"],
+      ["12503", "Agartala Humsafar"], ["12504", "Agartala Humsafar"],
+      ["12505", "North East Express"], ["12506", "North East Express"],
+      ["12507", "Guwahati Express"], ["12508", "Guwahati Express"],
+    ];
 
-function searchLiveTrain(query) {
-  const list = document.getElementById('liveTrainList');
-  if (!query || query.length < 2) { list.style.display='none'; return; }
-  const q = query.toLowerCase();
-  const results = TRAIN_DB.filter(([num, name]) =>
-    num.includes(q) || name.toLowerCase().includes(q)
-  ).slice(0, 6);
-  if (!results.length) { list.style.display='none'; return; }
-  list.innerHTML = results.map(([num, name]) =>
-    `<div class="autocomplete-item" onclick="selectTrain('${num}','${name.replace(/'/g,"\\'")}')">
+    function searchLiveTrain(query) {
+      const list = document.getElementById('liveTrainList');
+      if (!query || query.length < 2) { list.style.display = 'none'; return; }
+      const q = query.toLowerCase();
+      const results = TRAIN_DB.filter(([num, name]) =>
+        num.includes(q) || name.toLowerCase().includes(q)
+      ).slice(0, 6);
+      if (!results.length) { list.style.display = 'none'; return; }
+      list.innerHTML = results.map(([num, name]) =>
+        `<div class="autocomplete-item" onclick="selectTrain('${num}','${name.replace(/'/g, "\\'")}')">
       <span class="station-badge">${num}</span>
       <span>${name}</span>
     </div>`
-  ).join('');
-  list.style.display = 'block';
-}
-
-function selectTrain(num, name) {
-  document.getElementById('liveTrainInput').value = num;
-  document.getElementById('liveTrainList').style.display = 'none';
-  checkLiveStatus();
-}
-
-document.addEventListener('click', e => {
-  if (!e.target.closest('#liveTrainList') && !e.target.closest('#liveTrainInput')) {
-    document.getElementById('liveTrainList').style.display='none';
-  }
-});
-
-// ── Live Status ─────────────────────────────────────────────────
-async function checkLiveStatus() {
-  const input = document.getElementById('liveTrainInput').value.trim();
-  // Extract train number (5 digits) from input
-  const numMatch = input.match(/\d{4,5}/);
-  const trainNo = numMatch ? numMatch[0] : input;
-  const btn = document.getElementById('liveBtn');
-  const result = document.getElementById('live-result');
-
-  if (!trainNo) { result.innerHTML = errBox('Missing train number', 'Please enter a train number.'); return; }
-
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Fetching...';
-  result.innerHTML = '';
-
-  try {
-    const res = await fetch(`/live_status?train=${trainNo}`);
-    const data = await res.json();
-    if (data.error) { result.innerHTML = errBox('Error', data.error); return; }
-
-    const d = data.data || data;
-    const train = d.train || {};
-    const route = d.route || [];
-    const currentLoc = d.currentLocation || {};
-    const delay = d.delayMinutes ?? null;
-    const delayText = delay === null ? '—' : delay === 0 ? '🟢 On Time' : `🔴 ${delay} min late`;
-    const delayColor = delay === 0 ? '#166534' : delay > 0 ? '#991b1b' : '#166534';
-    const delayBg   = delay === 0 ? '#dcfce7' : delay > 0 ? '#fee2e2' : '#eff6ff';
-
-    // Format time from ISO string
-    function fmtTime(iso) {
-      if (!iso) return '—';
-      const d = new Date(iso);
-      return d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
+      ).join('');
+      list.style.display = 'block';
     }
 
-    // Find current station name
-    const currentStation = route.find(s => s.stationCode === currentLoc.stationCode);
-    const currentName = currentStation?.stationName || '';
+    function selectTrain(num, name) {
+      document.getElementById('liveTrainInput').value = num;
+      document.getElementById('liveTrainList').style.display = 'none';
+      checkLiveStatus();
+    }
 
-    // Build station rows
-    const stationRows = route.map((s, i) => {
-      const isPast    = s.status === 'departed';
-      const isCurrent = s.stationCode === currentLoc.stationCode;
-      const isUpcoming= s.status === 'upcoming';
-      const isHalt    = s.isHalt;
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#liveTrainList') && !e.target.closest('#liveTrainInput')) {
+        document.getElementById('liveTrainList').style.display = 'none';
+      }
+    });
 
-      const schedArr = fmtTime(s.scheduledArrival);
-      const schedDep = fmtTime(s.scheduledDeparture);
-      const actArr   = fmtTime(s.actualArrival);
-      const actDep   = fmtTime(s.actualDeparture);
-      const delayArr = s.delayArrival ? `+${s.delayArrival}m` : '';
-      const delayDep = s.delayDeparture ? `+${s.delayDeparture}m` : '';
-      const platform = s.platform ? `PF ${s.platform}` : '';
+    // ── Live Status ─────────────────────────────────────────────────
+    async function checkLiveStatus() {
+      const input = document.getElementById('liveTrainInput').value.trim();
+      // Extract train number (5 digits) from input
+      const numMatch = input.match(/\d{4,5}/);
+      const trainNo = numMatch ? numMatch[0] : input;
+      const btn = document.getElementById('liveBtn');
+      const result = document.getElementById('live-result');
 
-      const dotColor  = isCurrent ? '#2563eb' : isPast ? '#94a3b8' : '#e2e8f0';
-      const lineColor = isPast ? '#94a3b8' : '#e2e8f0';
-      const nameColor = isCurrent ? '#2563eb' : isPast ? '#64748b' : '#1e293b';
-      const nameBold  = (isCurrent || isHalt) ? '700' : '400';
+      if (!trainNo) { result.innerHTML = errBox('Missing train number', 'Please enter a train number.'); return; }
 
-      // Skip non-halt stations if not current (show as small)
-      if (!isHalt && !isCurrent) {
-        return `
-        <div style="display:flex;align-items:stretch;gap:10px;padding:4px 0;opacity:${isPast?0.4:0.7}">
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Fetching...';
+      result.innerHTML = '';
+
+      try {
+        const res = await fetch(`/live_status?train=${trainNo}`);
+        const data = await res.json();
+        if (data.error) { result.innerHTML = errBox('Error', data.error); return; }
+
+        const d = data.data || data;
+        const train = d.train || {};
+        const route = d.route || [];
+        const currentLoc = d.currentLocation || {};
+        const delay = d.delayMinutes ?? null;
+        const delayText = delay === null ? '—' : delay === 0 ? '🟢 On Time' : `🔴 ${delay} min late`;
+        const delayColor = delay === 0 ? '#166534' : delay > 0 ? '#991b1b' : '#166534';
+        const delayBg = delay === 0 ? '#dcfce7' : delay > 0 ? '#fee2e2' : '#eff6ff';
+
+        // Format time from ISO string
+        function fmtTime(iso) {
+          if (!iso) return '—';
+          const d = new Date(iso);
+          return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+
+        // Find current station name
+        const currentStation = route.find(s => s.stationCode === currentLoc.stationCode);
+        const currentName = currentStation?.stationName || '';
+
+        // Build station rows
+        const stationRows = route.map((s, i) => {
+          const isPast = s.status === 'departed';
+          const isCurrent = s.stationCode === currentLoc.stationCode;
+          const isUpcoming = s.status === 'upcoming';
+          const isHalt = s.isHalt;
+
+          const schedArr = fmtTime(s.scheduledArrival);
+          const schedDep = fmtTime(s.scheduledDeparture);
+          const actArr = fmtTime(s.actualArrival);
+          const actDep = fmtTime(s.actualDeparture);
+          const delayArr = s.delayArrival ? `+${s.delayArrival}m` : '';
+          const delayDep = s.delayDeparture ? `+${s.delayDeparture}m` : '';
+          const platform = s.platform ? `PF ${s.platform}` : '';
+
+          const dotColor = isCurrent ? '#2563eb' : isPast ? '#94a3b8' : '#e2e8f0';
+          const lineColor = isPast ? '#94a3b8' : '#e2e8f0';
+          const nameColor = isCurrent ? '#2563eb' : isPast ? '#64748b' : '#1e293b';
+          const nameBold = (isCurrent || isHalt) ? '700' : '400';
+
+          // Skip non-halt stations if not current (show as small)
+          if (!isHalt && !isCurrent) {
+            return `
+        <div style="display:flex;align-items:stretch;gap:10px;padding:4px 0;opacity:${isPast ? 0.4 : 0.7}">
           <div style="display:flex;flex-direction:column;align-items:center;">
             <div style="width:6px;height:6px;border-radius:50%;background:${dotColor};flex-shrink:0;margin-top:4px;"></div>
-            ${i<route.length-1?`<div style="width:1px;flex:1;background:${lineColor};min-height:16px;"></div>`:''}
+            ${i < route.length - 1 ? `<div style="width:1px;flex:1;background:${lineColor};min-height:16px;"></div>` : ''}
           </div>
           <div style="flex:1;padding-bottom:2px;">
             <div style="font-size:0.75rem;color:${nameColor};">${s.stationName} <span style="color:#cbd5e1;font-size:0.68rem;">${s.stationCode}</span></div>
           </div>
           <div style="font-size:0.7rem;color:#94a3b8;text-align:right;">${schedArr !== '—' ? schedArr : schedDep}</div>
         </div>`;
-      }
+          }
 
-      return `
-      <div style="display:flex;align-items:stretch;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;${isPast?'opacity:0.55':''}">
+          return `
+      <div style="display:flex;align-items:stretch;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;${isPast ? 'opacity:0.55' : ''}">
         <div style="display:flex;flex-direction:column;align-items:center;">
-          <div style="width:${isCurrent?14:10}px;height:${isCurrent?14:10}px;border-radius:50%;background:${dotColor};border:2px solid ${isCurrent?'#2563eb':isPast?'#94a3b8':'#cbd5e1'};flex-shrink:0;${isCurrent?'box-shadow:0 0 0 3px #bfdbfe;':''}margin-top:2px;"></div>
-          ${i<route.length-1?`<div style="width:2px;flex:1;background:${lineColor};min-height:24px;margin:2px 0;"></div>`:''}
+          <div style="width:${isCurrent ? 14 : 10}px;height:${isCurrent ? 14 : 10}px;border-radius:50%;background:${dotColor};border:2px solid ${isCurrent ? '#2563eb' : isPast ? '#94a3b8' : '#cbd5e1'};flex-shrink:0;${isCurrent ? 'box-shadow:0 0 0 3px #bfdbfe;' : ''}margin-top:2px;"></div>
+          ${i < route.length - 1 ? `<div style="width:2px;flex:1;background:${lineColor};min-height:24px;margin:2px 0;"></div>` : ''}
         </div>
         <div style="flex:1;">
           <div style="font-size:0.88rem;font-weight:${nameBold};color:${nameColor};">
             ${s.stationName}
-            ${isCurrent?'<span style="font-size:0.65rem;background:#2563eb;color:white;padding:1px 6px;border-radius:4px;margin-left:4px;">● HERE</span>':''}
+            ${isCurrent ? '<span style="font-size:0.65rem;background:#2563eb;color:white;padding:1px 6px;border-radius:4px;margin-left:4px;">● HERE</span>' : ''}
           </div>
           <div style="font-size:0.7rem;color:#94a3b8;margin-top:1px;">
-            ${s.stationCode}${s.distance?' · '+s.distance+' km':''}${platform?' · '+platform:''}
+            ${s.stationCode}${s.distance ? ' · ' + s.distance + ' km' : ''}${platform ? ' · ' + platform : ''}
           </div>
-          ${(actArr || actDep) && !isUpcoming ? `<div style="font-size:0.7rem;color:#2563eb;margin-top:2px;">Actual: ${actArr} / ${actDep} ${delayArr||delayDep?`<span style="color:#dc2626;">(${delayDep||delayArr})</span>`:''}</div>` : ''}
+          ${(actArr || actDep) && !isUpcoming ? `<div style="font-size:0.7rem;color:#2563eb;margin-top:2px;">Actual: ${actArr} / ${actDep} ${delayArr || delayDep ? `<span style="color:#dc2626;">(${delayDep || delayArr})</span>` : ''}</div>` : ''}
         </div>
         <div style="text-align:right;flex-shrink:0;min-width:60px;">
           <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">${schedArr !== '—' ? schedArr : ''}</div>
           <div style="font-size:0.72rem;color:#64748b;">${schedDep !== schedArr && schedDep !== '—' ? schedDep : ''}</div>
         </div>
       </div>`;
-    }).join('');
+        }).join('');
 
-    const updatedAt = d.lastUpdatedAt ? new Date(d.lastUpdatedAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}) : '';
+        const updatedAt = d.lastUpdatedAt ? new Date(d.lastUpdatedAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }) : '';
 
-    result.innerHTML = `
+        result.innerHTML = `
       <div style="margin-top:1rem;">
         <div class="result-header">
           <div class="train-icon"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 18v2M18 18v2M2 11h20M8 6V4M16 6V4"/></svg></div>
           <div>
-            <div class="train-name">${train.name || d.trainName || 'Train '+trainNo}</div>
-            <div class="train-meta">#${train.number||trainNo} · ${train.type||''} · ${train.totalHalts||''} halts</div>
+            <div class="train-name">${train.name || d.trainName || 'Train ' + trainNo}</div>
+            <div class="train-meta">#${train.number || trainNo} · ${train.type || ''} · ${train.totalHalts || ''} halts</div>
           </div>
           <div class="pnr-tag" style="background:${delayBg};color:${delayColor};font-size:0.75rem;">${delayText}</div>
         </div>
@@ -863,11 +1376,11 @@ async function checkLiveStatus() {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;">
           <div style="background:#f8fafc;border-radius:8px;padding:0.7rem;">
             <div style="font-size:0.65rem;color:#94a3b8;margin-bottom:3px;">FROM</div>
-            <div style="font-size:0.82rem;font-weight:700;color:#1e293b;">${train.source?.name||'—'}</div>
+            <div style="font-size:0.82rem;font-weight:700;color:#1e293b;">${train.source?.name || '—'}</div>
           </div>
           <div style="background:#f8fafc;border-radius:8px;padding:0.7rem;text-align:right;">
             <div style="font-size:0.65rem;color:#94a3b8;margin-bottom:3px;">TO</div>
-            <div style="font-size:0.82rem;font-weight:700;color:#1e293b;">${train.destination?.name||'—'}</div>
+            <div style="font-size:0.82rem;font-weight:700;color:#1e293b;">${train.destination?.name || '—'}</div>
           </div>
         </div>
 
@@ -876,11 +1389,11 @@ async function checkLiveStatus() {
           <div>
             <div style="font-size:0.65rem;color:#2563eb;font-weight:700;margin-bottom:3px;">📍 CURRENT LOCATION</div>
             <div style="font-size:1rem;font-weight:700;color:#1e293b;">${currentName}</div>
-            <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">Status: ${currentLoc.status||'—'}${updatedAt?' · Updated '+updatedAt:''}</div>
+            <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">Status: ${currentLoc.status || '—'}${updatedAt ? ' · Updated ' + updatedAt : ''}</div>
           </div>
           <div style="text-align:right;">
             <div style="font-size:0.65rem;color:#94a3b8;">Avg Speed</div>
-            <div style="font-size:0.9rem;font-weight:700;color:#1e293b;">${train.avgSpeed||'—'} km/h</div>
+            <div style="font-size:0.9rem;font-weight:700;color:#1e293b;">${train.avgSpeed || '—'} km/h</div>
           </div>
         </div>` : ''}
 
@@ -891,13 +1404,131 @@ async function checkLiveStatus() {
           ${stationRows}
         </div>
       </div>`;
-  } catch(err) {
-    result.innerHTML = errBox('Network error', err.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Get Live Status';
-  }
-}
-</script>
+      } catch (err) {
+        result.innerHTML = errBox('Network error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Get Live Status';
+      }
+    }
+
+    // -- Delay Predictor ----------------------------------------------------------
+    async function checkModelStatus() {
+      try {
+        const res = await fetch('/model_status');
+        const data = await res.json();
+        const notice = document.getElementById('delay-model-notice');
+        if (notice) notice.style.display = data.ready ? 'none' : 'block';
+        document.getElementById('delayBtn').disabled = !data.ready;
+        if (!data.ready) document.getElementById('delayBtn').title = 'Model not trained yet';
+      } catch (e) { }
+    }
+
+    function searchDelayTrain(q) {
+      const list = document.getElementById('delayTrainList');
+      if (!q || q.length < 2) { list.style.display = 'none'; return; }
+      const ql = q.toLowerCase();
+      const results = TRAIN_DB.filter(([num, name]) => num.includes(ql) || name.toLowerCase().includes(ql)).slice(0, 6);
+      if (!results.length) { list.style.display = 'none'; return; }
+      list.innerHTML = results.map(([num, name]) => `<div class="autocomplete-item" onclick="selectDelayTrain('${num}','${name.replace(/'/g, "\\'")}')"><span class="station-badge">${num}</span><span>${name}</span></div>`).join('');
+      list.style.display = 'block';
+    }
+    function selectDelayTrain(num, name) {
+      document.getElementById('delayTrainInput').value = `${num} – ${name}`;
+      document.getElementById('delayTrainNo').value = num;
+      document.getElementById('delayTrainList').style.display = 'none';
+    }
+
+    function searchDelayStation(q) {
+      const list = document.getElementById('delayStationList');
+      if (!q || q.length < 1) { list.style.display = 'none'; return; }
+      const ql = q.toLowerCase();
+      const results = STATION_DB.filter(([code, name]) => code.toLowerCase().includes(ql) || name.toLowerCase().includes(ql)).slice(0, 6);
+      if (!results.length) { list.style.display = 'none'; return; }
+      list.innerHTML = results.map(([code, name]) => `<div class="autocomplete-item" onclick="selectDelayStation('${code}','${name.replace(/'/g, "\\'")}')"><span class="station-badge">${code}</span><span>${name}</span></div>`).join('');
+      list.style.display = 'block';
+    }
+    function selectDelayStation(code, name) {
+      document.getElementById('delayStationInput').value = `${name} (${code})`;
+      document.getElementById('delayStationCode').value = code;
+      document.getElementById('delayStationList').style.display = 'none';
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('#delayTrainList') && !e.target.closest('#delayTrainInput'))
+        document.getElementById('delayTrainList').style.display = 'none';
+      if (!e.target.closest('#delayStationList') && !e.target.closest('#delayStationInput'))
+        document.getElementById('delayStationList').style.display = 'none';
+    });
+
+    async function predictDelay() {
+      const trainNo = document.getElementById('delayTrainNo').value ||
+        document.getElementById('delayTrainInput').value.trim().match(/\d{3,5}/)?.[0];
+      const station = document.getElementById('delayStationCode').value ||
+        document.getElementById('delayStationInput').value.trim().split(' ')[0].toUpperCase();
+      const dt = document.getElementById('delayDate').value || new Date().toISOString().slice(0, 10);
+      const btn = document.getElementById('delayBtn');
+      const result = document.getElementById('delay-result');
+
+      if (!trainNo) { result.innerHTML = errBox('Missing train', 'Please enter a train number.'); return; }
+      if (!station) { result.innerHTML = errBox('Missing station', 'Please enter a station code.'); return; }
+
+      btn.disabled = true;
+      btn.innerHTML = '<div class="spinner"></div> Predicting…';
+      result.innerHTML = '';
+
+      try {
+        const res = await fetch(`/predict_delay?train=${trainNo}&station=${station}&date=${dt}`);
+        const d = await res.json();
+        if (d.error) { result.innerHTML = errBox('Prediction Error', d.error); return; }
+
+        const colorMap = {
+          green: { bg: '#dcfce7', border: '#86efac', text: '#166534', icon: '🟢' },
+          orange: { bg: '#ffedd5', border: '#fdba74', text: '#9a3412', icon: '🟡' },
+          amber: { bg: '#fef9c3', border: '#fde68a', text: '#78350f', icon: '🟠' },
+          red: { bg: '#fee2e2', border: '#fca5a5', text: '#991b1b', icon: '🔴' },
+        };
+        const c = colorMap[d.color] || colorMap.green;
+        const delayMsg = d.predicted_delay <= 0
+          ? 'Expected On Time'
+          : `~${Math.abs(Math.round(d.predicted_delay))} min delay`;
+
+        result.innerHTML = `
+      <div style="margin-top:1.25rem;animation:fadeIn .4s ease;">
+        <div style="background:${c.bg};border:1.5px solid ${c.border};border-radius:14px;padding:1.25rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+            <div>
+              <div style="font-size:0.65rem;font-weight:700;color:${c.text};text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Prediction Result</div>
+              <div style="font-size:1.5rem;font-weight:800;color:${c.text};">${c.icon} ${d.status}</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:0.65rem;color:${c.text};opacity:0.7;">Predicted Delay</div>
+              <div style="font-size:2rem;font-weight:800;color:${c.text};">${Math.max(0, Math.round(d.predicted_delay))}<span style="font-size:0.9rem;font-weight:400;"> min</span></div>
+            </div>
+          </div>
+          <div style="border-top:1px solid ${c.border};padding-top:0.75rem;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;">
+            <div><div style="font-size:0.6rem;color:${c.text};opacity:0.6;margin-bottom:2px;">TRAIN</div><div style="font-size:0.8rem;font-weight:700;color:${c.text};">${d.train_no}</div></div>
+            <div style="text-align:center;"><div style="font-size:0.6rem;color:${c.text};opacity:0.6;margin-bottom:2px;">STATION</div><div style="font-size:0.8rem;font-weight:700;color:${c.text};">${d.station}</div></div>
+            <div style="text-align:right;"><div style="font-size:0.6rem;color:${c.text};opacity:0.6;margin-bottom:2px;">DAY</div><div style="font-size:0.8rem;font-weight:700;color:${c.text};">${d.day_of_week}</div></div>
+          </div>
+        </div>
+        <p style="font-size:0.7rem;color:#94a3b8;text-align:center;margin-top:0.6rem;">Prediction based on 38M+ historical records · Results are approximate.</p>
+      </div>`;
+      } catch (err) {
+        result.innerHTML = errBox('Network error', err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Predict Delay';
+        btn.style.background = 'linear-gradient(135deg,#7c3aed,#2563eb)';
+      }
+    }
+
+    // Set today as default date for delay predictor
+    document.addEventListener('DOMContentLoaded', () => {
+      const d = document.getElementById('delayDate');
+      if (d) d.value = new Date().toISOString().slice(0, 10);
+    });
+  </script>
 </body>
+
 </html>
