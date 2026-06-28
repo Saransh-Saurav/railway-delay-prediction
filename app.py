@@ -22,8 +22,10 @@ _MODEL_DIR = os.path.join(os.path.dirname(__file__), "model")
 _model     = None
 _meta      = None
 
+_model_error = None
+
 def _load_model():
-    global _model, _meta
+    global _model, _meta, _model_error
     model_path = os.path.join(_MODEL_DIR, "delay_model.joblib")
     meta_path  = os.path.join(_MODEL_DIR,  "meta.json")
     if os.path.exists(model_path) and os.path.exists(meta_path):
@@ -33,7 +35,10 @@ def _load_model():
                 _meta = json.load(f)
             print("[INFO] Delay prediction model loaded OK.")
         except Exception as e:
+            _model_error = f"Load Exception: {str(e)}"
             print(f"[WARN] Could not load delay model: {e}")
+    else:
+        _model_error = f"Files missing. model_path exists: {os.path.exists(model_path)}, meta_path exists: {os.path.exists(meta_path)}. Looking in {_MODEL_DIR}"
 
 _load_model()
 # -----------------------------------------------------------------------------
@@ -109,7 +114,7 @@ def live_status():
 @app.route("/model_status")
 def model_status():
     """Tell the frontend whether the ML model is ready."""
-    return jsonify({"ready": _model is not None})
+    return jsonify({"ready": _model is not None, "error": _model_error})
 
 
 @app.route("/predict_delay")
