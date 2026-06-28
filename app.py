@@ -12,6 +12,17 @@ RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY", "")
 RAILAPI_KEY  = os.getenv("RAILAPI_KEY", "")
 
 PNR_HOST = "irctc-indian-railway-pnr-status.p.rapidapi.com"
+RAIL_BASE = "https://api.railradar.in/v1"
+
+
+def rail_get(endpoint):
+    response = requests.get(
+        f"{RAIL_BASE}{endpoint}",
+        headers={"Authorization": f"Bearer {RAILAPI_KEY}"},
+        timeout=10
+    )
+    response.raise_for_status()
+    return response.json()
 
 
 @app.route("/")
@@ -53,14 +64,20 @@ def trains_between():
         return jsonify({"error": "RAILAPI_KEY not configured."}), 500
     try:
         today = date.today().isoformat()
-        url = f"https://api.railradar.in/v1/trains/between/{from_code}/{to_code}?date={today}"
-        response = requests.get(
-            url,
-            headers={"Authorization": f"Bearer {RAILAPI_KEY}"},
-            timeout=10
-        )
-        response.raise_for_status()
-        return jsonify(response.json())
+        return jsonify(rail_get(f"/trains/between/{from_code}/{to_code}?date={today}"))
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/live_status")
+def live_status():
+    train_no = request.args.get("train", "").strip()
+    if not train_no:
+        return jsonify({"error": "train number is required."}), 400
+    if not RAILAPI_KEY:
+        return jsonify({"error": "RAILAPI_KEY not configured."}), 500
+    try:
+        return jsonify(rail_get(f"/trains/{train_no}/live"))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

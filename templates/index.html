@@ -195,6 +195,10 @@
       <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 18v2M18 18v2M2 11h20"/></svg>
       Train Search
     </button>
+    <button class="tab-btn" onclick="switchTab('live')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      Live Status
+    </button>
   </div>
 
   <!-- PNR TAB -->
@@ -236,6 +240,24 @@
         Search Trains
       </button>
       <div id="train-result"></div>
+    </div>
+  </div>
+
+  <!-- LIVE STATUS TAB -->
+  <div id="tab-live" class="tab-content">
+    <div class="card">
+      <div class="form-group">
+        <label>Train Number or Name</label>
+        <input type="text" id="liveTrainInput" placeholder="e.g. 12566 or Bihar Sampark"
+          oninput="searchLiveTrain(this.value)"
+          onkeydown="if(event.key==='Enter')checkLiveStatus()"/>
+        <div class="autocomplete-list" id="liveTrainList" style="display:none;"></div>
+      </div>
+      <button class="btn" id="liveBtn" onclick="checkLiveStatus()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Get Live Status
+      </button>
+      <div id="live-result"></div>
     </div>
   </div>
 
@@ -362,9 +384,9 @@ function getStationName(code) {
 
 // ── Tabs ────────────────────────────────────────────────────────
 function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', (i===0&&tab==='pnr')||(i===1&&tab==='trains')));
-  document.getElementById('tab-pnr').classList.toggle('active', tab==='pnr');
-  document.getElementById('tab-trains').classList.toggle('active', tab==='trains');
+  const tabs = ['pnr','trains','live'];
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', tabs[i]===tab));
+  tabs.forEach(t => document.getElementById('tab-'+t).classList.toggle('active', t===tab));
 }
 
 // ── PNR ────────────────────────────────────────────────────────
@@ -604,36 +626,42 @@ async function searchTrains() {
     const res = await fetch(`/trains_between?from=${fromCode}&to=${toCode}`);
     const data = await res.json();
     if (data.error) { result.innerHTML = errBox('Error', data.error); return; }
-    const trains = (data.data && data.data.trains) ? data.data.trains : [];
+    if (data.Status === 'FAILED' || data.ResponseCode !== '200') {
+      result.innerHTML = errBox('No trains found', data.Message || 'No trains found between these stations.');
+      return;
+    }
+    const trains = data.Trains || data.data || [];
     if (!trains.length) { result.innerHTML = errBox('No trains found','No trains found between these stations.'); return; }
     result.innerHTML = `
-      <div class="results-count" style="margin-top:1rem;">${data.data?.count || trains.length} trains found</div>
+      <div class="results-count" style="margin-top:1rem;">${data.TotalTrains || trains.length} trains found</div>
       <div class="train-list">
         ${trains.map(t => {
-          const num  = t.train?.number || '—';
-          const name = t.train?.name || 'Unknown Train';
-          const dep  = t.from?.departure || '—';
-          const arr  = t.to?.arrival || '—';
-          const dur  = t.duration ? `${Math.floor(t.duration/60)}h ${t.duration%60}m` : '—';
-          const type = t.train?.type || '';
-          const src  = '';
-          const dst  = '';
-          const days = t.train?.runDays || [];
+          const num  = t.TrainNo  || t.train_no  || '—';
+          const name = t.TrainName|| t.train_name || 'Unknown Train';
+          const dep  = t.DepartureTime || t.from_time || '—';
+          const arr  = t.ArrivalTime   || t.to_time   || '—';
+          const dur  = t.TravelTime    || t.travel_time|| '—';
+          const type = t.TrainType || '';
+          const src  = t.Source   || '';
+          const dst  = t.Destination || '';
           return `
           <div class="train-card">
             <div class="train-card-top">
               <div class="tc-name">${name}</div>
-              <div class="tc-num">${num}</div>
+              <div style="display:flex;gap:6px;align-items:center;">
+                ${type ? `<span style="font-size:0.65rem;background:#eff6ff;color:#2563eb;padding:2px 6px;border-radius:4px;font-weight:700;">${type}</span>` : ''}
+                <div class="tc-num">${num}</div>
+              </div>
             </div>
-            <div class="train-card-bottom" style="margin-bottom:6px;">
+            <div class="train-card-bottom" style="margin-bottom:4px;">
               <span class="tc-time">${dep}</span>
               <div class="tc-dot"></div>
-              <span>⏱ ${dur} hrs</span>
+              <span>⏱ ${dur}</span>
               <div class="tc-dot"></div>
               <span class="tc-time">${arr}</span>
             </div>
-            <div style="font-size:0.7rem;color:#94a3b8;margin-bottom:4px;">${src} → ${dst}</div>
-            <div style="font-size:0.72rem;color:#64748b;">${Array.isArray(days) ? days.map(d=>d.charAt(0).toUpperCase()+d.slice(1,3)).join(' · ') : ''}</div>
+            <div style="font-size:0.7rem;color:#94a3b8;">${src} → ${dst}</div>
+            <button onclick="showTrainInfo('${num}','${name.replace(/'/g,"\\'")}')" style="margin-top:8px;padding:4px 12px;background:#eff6ff;color:#2563eb;border:none;border-radius:6px;font-size:0.75rem;font-weight:600;cursor:pointer;">● Live Status</button>
           </div>`;
         }).join('')}
       </div>`;
@@ -646,9 +674,235 @@ async function searchTrains() {
 }
 
 function showTrainInfo(number, name) {
-  alert(`Train: ${name}\nNumber: ${number}\n\nLive status feature coming soon!`);
+  switchTab('live');
+  document.getElementById('liveTrainInput').value = number;
+  checkLiveStatus();
+}
+
+// ── Train name search for live status ──────────────────────────
+const TRAIN_DB = [
+  ["12301","Howrah Rajdhani Express"],["12302","New Delhi Rajdhani Express"],
+  ["12303","Poorva Express"],["12304","Poorva Express"],
+  ["12305","Howrah Rajdhani Express"],["12306","Howrah Rajdhani Express"],
+  ["12309","Rajendra Nagar Patna Rajdhani"],["12310","Rajendra Nagar Patna Rajdhani"],
+  ["12311","Kalka Mail"],["12312","Kalka Mail"],
+  ["12313","Sealdah Rajdhani Express"],["12314","Sealdah Rajdhani Express"],
+  ["12381","Poorva Express"],["12382","Poorva Express"],
+  ["12559","Shiv Ganga Express"],["12560","Shiv Ganga Express"],
+  ["12561","Swatantrata Senani Express"],["12562","Swatantrata Senani Express"],
+  ["12565","Bihar Sampark Kranti Express"],["12566","Bihar Sampark Kranti Express"],
+  ["12569","Jaynagar Humsafar Express"],["12570","Jaynagar Humsafar Express"],
+  ["12801","Purushottam Express"],["12802","Purushottam Express"],
+  ["12951","Mumbai Rajdhani Express"],["12952","Mumbai Rajdhani Express"],
+  ["12953","August Kranti Rajdhani"],["12954","August Kranti Rajdhani"],
+  ["12957","Swarna Jayanti Rajdhani"],["12958","Swarna Jayanti Rajdhani"],
+  ["12001","Bhopal Shatabdi"],["12002","Rani Kamalapati Shatabdi"],
+  ["12003","Lucknow Shatabdi"],["12004","Lucknow Shatabdi"],
+  ["12009","Mumbai Shatabdi"],["12010","Mumbai Shatabdi"],
+  ["12011","Kalka Shatabdi"],["12012","Kalka Shatabdi"],
+  ["12013","Amritsar Shatabdi"],["12014","Amritsar Shatabdi"],
+  ["12015","Ajmer Shatabdi"],["12016","Ajmer Shatabdi"],
+  ["12017","Dehradun Shatabdi"],["12018","Dehradun Shatabdi"],
+  ["12019","Howrah Shatabdi"],["12020","Howrah Shatabdi"],
+  ["12137","Punjab Mail"],["12138","Punjab Mail"],
+  ["12615","Grand Trunk Express"],["12616","Grand Trunk Express"],
+  ["12621","Tamil Nadu Express"],["12622","Tamil Nadu Express"],
+  ["12625","Kerala Express"],["12626","Kerala Express"],
+  ["12627","Karnataka Express"],["12628","Karnataka Express"],
+  ["12641","Thirukkural Express"],["12642","Thirukkural Express"],
+  ["12643","Nonstop Nizamuddin Express"],["12644","Nonstop Nizamuddin Express"],
+  ["12645","Millennium Express"],["12646","Millennium Express"],
+  ["12649","Karnataka Sampark Kranti"],["12650","YPR S Kranti Express"],
+  ["12679","Chennai Coimbatore Intercity"],["12680","Chennai Coimbatore Intercity"],
+  ["12723","Telangana Express"],["12724","Telangana Express"],
+  ["12759","Charminar SF Express"],["12760","Charminar SF Express"],
+  ["12801","Purushottam SF Express"],["12802","Purushottam SF Express"],
+  ["11077","Jhelum Express"],["11078","Jhelum Express"],
+  ["11057","Mumbai CSMT Express"],["11058","Mumbai CSMT Express"],
+  ["12419","Gomti Express"],["12420","Gomti Express"],
+  ["12503","Agartala Humsafar"],["12504","Agartala Humsafar"],
+  ["12505","North East Express"],["12506","North East Express"],
+  ["12507","Guwahati Express"],["12508","Guwahati Express"],
+];
+
+function searchLiveTrain(query) {
+  const list = document.getElementById('liveTrainList');
+  if (!query || query.length < 2) { list.style.display='none'; return; }
+  const q = query.toLowerCase();
+  const results = TRAIN_DB.filter(([num, name]) =>
+    num.includes(q) || name.toLowerCase().includes(q)
+  ).slice(0, 6);
+  if (!results.length) { list.style.display='none'; return; }
+  list.innerHTML = results.map(([num, name]) =>
+    `<div class="autocomplete-item" onclick="selectTrain('${num}','${name.replace(/'/g,"\\'")}')">
+      <span class="station-badge">${num}</span>
+      <span>${name}</span>
+    </div>`
+  ).join('');
+  list.style.display = 'block';
+}
+
+function selectTrain(num, name) {
+  document.getElementById('liveTrainInput').value = num;
+  document.getElementById('liveTrainList').style.display = 'none';
+  checkLiveStatus();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('#liveTrainList') && !e.target.closest('#liveTrainInput')) {
+    document.getElementById('liveTrainList').style.display='none';
+  }
+});
+
+// ── Live Status ─────────────────────────────────────────────────
+async function checkLiveStatus() {
+  const input = document.getElementById('liveTrainInput').value.trim();
+  // Extract train number (5 digits) from input
+  const numMatch = input.match(/\d{4,5}/);
+  const trainNo = numMatch ? numMatch[0] : input;
+  const btn = document.getElementById('liveBtn');
+  const result = document.getElementById('live-result');
+
+  if (!trainNo) { result.innerHTML = errBox('Missing train number', 'Please enter a train number.'); return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Fetching...';
+  result.innerHTML = '';
+
+  try {
+    const res = await fetch(`/live_status?train=${trainNo}`);
+    const data = await res.json();
+    if (data.error) { result.innerHTML = errBox('Error', data.error); return; }
+
+    const d = data.data || data;
+    const train = d.train || {};
+    const route = d.route || [];
+    const currentLoc = d.currentLocation || {};
+    const delay = d.delayMinutes ?? null;
+    const delayText = delay === null ? '—' : delay === 0 ? '🟢 On Time' : `🔴 ${delay} min late`;
+    const delayColor = delay === 0 ? '#166534' : delay > 0 ? '#991b1b' : '#166534';
+    const delayBg   = delay === 0 ? '#dcfce7' : delay > 0 ? '#fee2e2' : '#eff6ff';
+
+    // Format time from ISO string
+    function fmtTime(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit', hour12:true});
+    }
+
+    // Find current station name
+    const currentStation = route.find(s => s.stationCode === currentLoc.stationCode);
+    const currentName = currentStation?.stationName || '';
+
+    // Build station rows
+    const stationRows = route.map((s, i) => {
+      const isPast    = s.status === 'departed';
+      const isCurrent = s.stationCode === currentLoc.stationCode;
+      const isUpcoming= s.status === 'upcoming';
+      const isHalt    = s.isHalt;
+
+      const schedArr = fmtTime(s.scheduledArrival);
+      const schedDep = fmtTime(s.scheduledDeparture);
+      const actArr   = fmtTime(s.actualArrival);
+      const actDep   = fmtTime(s.actualDeparture);
+      const delayArr = s.delayArrival ? `+${s.delayArrival}m` : '';
+      const delayDep = s.delayDeparture ? `+${s.delayDeparture}m` : '';
+      const platform = s.platform ? `PF ${s.platform}` : '';
+
+      const dotColor  = isCurrent ? '#2563eb' : isPast ? '#94a3b8' : '#e2e8f0';
+      const lineColor = isPast ? '#94a3b8' : '#e2e8f0';
+      const nameColor = isCurrent ? '#2563eb' : isPast ? '#64748b' : '#1e293b';
+      const nameBold  = (isCurrent || isHalt) ? '700' : '400';
+
+      // Skip non-halt stations if not current (show as small)
+      if (!isHalt && !isCurrent) {
+        return `
+        <div style="display:flex;align-items:stretch;gap:10px;padding:4px 0;opacity:${isPast?0.4:0.7}">
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div style="width:6px;height:6px;border-radius:50%;background:${dotColor};flex-shrink:0;margin-top:4px;"></div>
+            ${i<route.length-1?`<div style="width:1px;flex:1;background:${lineColor};min-height:16px;"></div>`:''}
+          </div>
+          <div style="flex:1;padding-bottom:2px;">
+            <div style="font-size:0.75rem;color:${nameColor};">${s.stationName} <span style="color:#cbd5e1;font-size:0.68rem;">${s.stationCode}</span></div>
+          </div>
+          <div style="font-size:0.7rem;color:#94a3b8;text-align:right;">${schedArr !== '—' ? schedArr : schedDep}</div>
+        </div>`;
+      }
+
+      return `
+      <div style="display:flex;align-items:stretch;gap:10px;padding:8px 0;border-bottom:1px solid #f1f5f9;${isPast?'opacity:0.55':''}">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:${isCurrent?14:10}px;height:${isCurrent?14:10}px;border-radius:50%;background:${dotColor};border:2px solid ${isCurrent?'#2563eb':isPast?'#94a3b8':'#cbd5e1'};flex-shrink:0;${isCurrent?'box-shadow:0 0 0 3px #bfdbfe;':''}margin-top:2px;"></div>
+          ${i<route.length-1?`<div style="width:2px;flex:1;background:${lineColor};min-height:24px;margin:2px 0;"></div>`:''}
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:0.88rem;font-weight:${nameBold};color:${nameColor};">
+            ${s.stationName}
+            ${isCurrent?'<span style="font-size:0.65rem;background:#2563eb;color:white;padding:1px 6px;border-radius:4px;margin-left:4px;">● HERE</span>':''}
+          </div>
+          <div style="font-size:0.7rem;color:#94a3b8;margin-top:1px;">
+            ${s.stationCode}${s.distance?' · '+s.distance+' km':''}${platform?' · '+platform:''}
+          </div>
+          ${(actArr || actDep) && !isUpcoming ? `<div style="font-size:0.7rem;color:#2563eb;margin-top:2px;">Actual: ${actArr} / ${actDep} ${delayArr||delayDep?`<span style="color:#dc2626;">(${delayDep||delayArr})</span>`:''}</div>` : ''}
+        </div>
+        <div style="text-align:right;flex-shrink:0;min-width:60px;">
+          <div style="font-size:0.78rem;font-weight:600;color:#1e293b;">${schedArr !== '—' ? schedArr : ''}</div>
+          <div style="font-size:0.72rem;color:#64748b;">${schedDep !== schedArr && schedDep !== '—' ? schedDep : ''}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    const updatedAt = d.lastUpdatedAt ? new Date(d.lastUpdatedAt).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true}) : '';
+
+    result.innerHTML = `
+      <div style="margin-top:1rem;">
+        <div class="result-header">
+          <div class="train-icon"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 18v2M18 18v2M2 11h20M8 6V4M16 6V4"/></svg></div>
+          <div>
+            <div class="train-name">${train.name || d.trainName || 'Train '+trainNo}</div>
+            <div class="train-meta">#${train.number||trainNo} · ${train.type||''} · ${train.totalHalts||''} halts</div>
+          </div>
+          <div class="pnr-tag" style="background:${delayBg};color:${delayColor};font-size:0.75rem;">${delayText}</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1rem;">
+          <div style="background:#f8fafc;border-radius:8px;padding:0.7rem;">
+            <div style="font-size:0.65rem;color:#94a3b8;margin-bottom:3px;">FROM</div>
+            <div style="font-size:0.82rem;font-weight:700;color:#1e293b;">${train.source?.name||'—'}</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:8px;padding:0.7rem;text-align:right;">
+            <div style="font-size:0.65rem;color:#94a3b8;margin-bottom:3px;">TO</div>
+            <div style="font-size:0.82rem;font-weight:700;color:#1e293b;">${train.destination?.name||'—'}</div>
+          </div>
+        </div>
+
+        ${currentName ? `
+        <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:0.9rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-size:0.65rem;color:#2563eb;font-weight:700;margin-bottom:3px;">📍 CURRENT LOCATION</div>
+            <div style="font-size:1rem;font-weight:700;color:#1e293b;">${currentName}</div>
+            <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">Status: ${currentLoc.status||'—'}${updatedAt?' · Updated '+updatedAt:''}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.65rem;color:#94a3b8;">Avg Speed</div>
+            <div style="font-size:0.9rem;font-weight:700;color:#1e293b;">${train.avgSpeed||'—'} km/h</div>
+          </div>
+        </div>` : ''}
+
+        <div style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem;">
+          Full Route · ${route.length} stations
+        </div>
+        <div style="max-height:500px;overflow-y:auto;padding-right:4px;">
+          ${stationRows}
+        </div>
+      </div>`;
+  } catch(err) {
+    result.innerHTML = errBox('Network error', err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg> Get Live Status';
+  }
 }
 </script>
 </body>
 </html>
-
