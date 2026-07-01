@@ -82,12 +82,12 @@
     .hero-train-image {
       width: 100%;
       height: 100%;
-      min-height: 430px;
       display: block;
       object-fit: cover;
       object-position: center;
       border-radius: inherit;
       transition: transform 0.45s ease;
+      min-height: 430px;
     }
 
     .hero-panel-right:hover .hero-train-image {
@@ -126,6 +126,7 @@
       height: 42px;
       object-fit: contain;
       display: block;
+      filter: brightness(0) invert(1);
     }
 
     .header h1 {
@@ -288,6 +289,7 @@
       align-items: center;
       gap: 8px;
       border-bottom: 1px solid #f1f5f9;
+      color: #1e3a8a;
     }
 
     .autocomplete-item:last-child {
@@ -296,6 +298,11 @@
 
     .autocomplete-item:hover {
       background: #eff6ff;
+    }
+
+    .autocomplete-item span:last-child {
+      color: #1e293b;
+      font-weight: 600;
     }
 
     .station-badge {
@@ -1950,6 +1957,9 @@
           red: { bg: '#fee2e2', border: '#fca5a5', text: '#991b1b', icon: '🔴' },
         };
         const c = colorMap[d.color] || colorMap.green;
+        const resultLabel = d.result_label || 'Prediction Result';
+        const valueLabel = d.value_label || 'Predicted Delay';
+        const sourceNote = d.source_note || 'Prediction based on 38M+ historical records. Results are approximate.';
         const delayMsg = d.predicted_delay <= 0
           ? 'Expected On Time'
           : `~${Math.abs(Math.round(d.predicted_delay))} min delay`;
@@ -1959,11 +1969,11 @@
         <div style="background:${c.bg};border:1.5px solid ${c.border};border-radius:14px;padding:1.25rem;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
             <div>
-              <div style="font-size:0.65rem;font-weight:700;color:${c.text};text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Prediction Result</div>
+              <div style="font-size:0.65rem;font-weight:700;color:${c.text};text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">${resultLabel}</div>
               <div style="font-size:1.5rem;font-weight:800;color:${c.text};">${c.icon} ${d.status}</div>
             </div>
             <div style="text-align:right;">
-              <div style="font-size:0.65rem;color:${c.text};opacity:0.7;">Predicted Delay</div>
+              <div style="font-size:0.65rem;color:${c.text};opacity:0.7;">${valueLabel}</div>
               <div style="font-size:2rem;font-weight:800;color:${c.text};">${Math.max(0, Math.round(d.predicted_delay))}<span style="font-size:0.9rem;font-weight:400;"> min</span></div>
             </div>
           </div>

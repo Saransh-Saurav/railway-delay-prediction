@@ -3,4 +3,7 @@ requests==2.32.3
 python-dotenv==1.0.1
 joblib==1.5.3
 numpy==2.5.0
+pandas
 scikit-learn==1.9.0
+lightgbm==4.6.0
+optuna==4.9.0
