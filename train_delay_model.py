@@ -4,10 +4,15 @@ import json
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import GradientBoostingRegressor
+from lightgbm import LGBMRegressor, early_stopping, log_evaluation
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import mean_absolute_error
+
+try:
+    import optuna
+except ImportError:
+    optuna = None
 
 # Force UTF-8 output on Windows
 sys.stdout.reconfigure(encoding='utf-8') if hasattr(sys.stdout, 'reconfigure') else None
@@ -17,6 +22,8 @@ sys.stdout.reconfigure(encoding='utf-8') if hasattr(sys.stdout, 'reconfigure') e
 DATA_PATH = r"C:\Users\mishr\.cache\kagglehub\datasets\rxydenxd\indian-railways-delay-dataset\versions\1"
 MODEL_DIR  = os.path.join(os.path.dirname(__file__), "model")
 SAMPLE_ROWS = 500_000   # limit to avoid OOM on a laptop
+OPTUNA_TRIALS = int(os.getenv("OPTUNA_TRIALS", "0"))
+TUNE_ROWS = int(os.getenv("TUNE_ROWS", "150000"))
 
 os.makedirs(MODEL_DIR, exist_ok=True)
 
@@ -127,6 +134,7 @@ def preprocess(delay_df, sched_df, train_df, stat_df):
 
     meta = {
         "features":    features,
+        "model_type":  "lightgbm_lgbmregressor",
         "type_map":    type_map,
         "zone_map":    zone_map,
         "train_map":   train_map,
@@ -142,19 +150,88 @@ def preprocess(delay_df, sched_df, train_df, stat_df):
 
 
 def train(X, y):
-    print("Splitting into train/test …")
+    print("Splitting into train/test ...")
     X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.15, random_state=42)
 
-    print("Training GradientBoostingRegressor …  (may take a few minutes)")
-    model = GradientBoostingRegressor(
-        n_estimators=200,
-        max_depth=5,
-        learning_rate=0.08,
-        subsample=0.8,
-        random_state=42,
-        verbose=1,
+    base_params = {
+        "objective": "regression_l1",
+        "n_estimators": 3000,
+        "learning_rate": 0.04,
+        "max_depth": 7,
+        "num_leaves": 63,
+        "subsample": 0.85,
+        "subsample_freq": 1,
+        "colsample_bytree": 0.85,
+        "min_child_samples": 60,
+        "reg_alpha": 0.1,
+        "reg_lambda": 0.5,
+        "random_state": 42,
+        "n_jobs": -1,
+        "verbose": -1,
+    }
+
+    if OPTUNA_TRIALS > 0:
+        if optuna is None:
+            raise RuntimeError("OPTUNA_TRIALS was set, but optuna is not installed.")
+
+        print(f"Tuning LightGBM with Optuna ({OPTUNA_TRIALS} trials) ...")
+        tune_size = min(TUNE_ROWS, len(X_tr))
+        rng = np.random.default_rng(42)
+        tune_idx = rng.choice(len(X_tr), size=tune_size, replace=False)
+        X_tune, y_tune = X_tr[tune_idx], y_tr[tune_idx]
+        X_tn, X_tv, y_tn, y_tv = train_test_split(
+            X_tune, y_tune, test_size=0.2, random_state=42
+        )
+
+        def objective(trial):
+            params = {
+                **base_params,
+                "n_estimators": 2000,
+                "learning_rate": trial.suggest_float("learning_rate", 0.01, 0.1, log=True),
+                "max_depth": trial.suggest_int("max_depth", 3, 9),
+                "colsample_bytree": trial.suggest_float("colsample_bytree", 0.55, 0.95),
+                "subsample": trial.suggest_float("subsample", 0.65, 1.0),
+                "subsample_freq": trial.suggest_int("subsample_freq", 1, 5),
+                "min_child_samples": trial.suggest_int("min_child_samples", 20, 200),
+                "reg_alpha": trial.suggest_float("reg_alpha", 1e-3, 10.0, log=True),
+                "reg_lambda": trial.suggest_float("reg_lambda", 1e-3, 10.0, log=True),
+            }
+            max_leaves = (2 ** params["max_depth"]) - 1
+            params["num_leaves"] = trial.suggest_int("num_leaves", 7, max_leaves)
+
+            model = LGBMRegressor(**params)
+            model.fit(
+                X_tn,
+                y_tn,
+                eval_set=[(X_tv, y_tv)],
+                eval_metric="l1",
+                callbacks=[
+                    early_stopping(stopping_rounds=50, verbose=False),
+                    log_evaluation(period=0),
+                ],
+            )
+            preds = model.predict(X_tv)
+            return mean_absolute_error(y_tv, preds)
+
+        study = optuna.create_study(direction="minimize")
+        study.optimize(objective, n_trials=OPTUNA_TRIALS)
+        base_params.update(study.best_params)
+        base_params["n_estimators"] = 5000
+        print(f"Best Optuna MAE = {study.best_value:.2f}")
+        print(f"Best params = {study.best_params}")
+
+    print("Training LightGBM regressor ...")
+    model = LGBMRegressor(**base_params)
+    model.fit(
+        X_tr,
+        y_tr,
+        eval_set=[(X_te, y_te)],
+        eval_metric="l1",
+        callbacks=[
+            early_stopping(stopping_rounds=100, verbose=False),
+            log_evaluation(period=100),
+        ],
     )
-    model.fit(X_tr, y_tr)
 
     y_pred = model.predict(X_te)
     mae    = mean_absolute_error(y_te, y_pred)

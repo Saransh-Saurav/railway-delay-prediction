@@ -117,9 +117,52 @@ def model_status():
     return jsonify({"ready": _model is not None, "error": _model_error})
 
 
+def _delay_status(delay_minutes):
+    """Convert delay minutes into the UI status bucket."""
+    if delay_minutes <= 5:
+        return "On Time", "green"
+    if delay_minutes <= 30:
+        return "Slightly Delayed", "orange"
+    if delay_minutes <= 90:
+        return "Moderately Delayed", "amber"
+    return "Highly Delayed", "red"
+
+
+def _live_delay_for_station(train_no, station_code):
+    """Return live delay for today's train when RailRadar has it."""
+    if not RAILAPI_KEY:
+        return None
+
+    live_payload = rail_get(f"/trains/{train_no}/live")
+    data = live_payload.get("data", live_payload)
+    route = data.get("route", [])
+    station = next(
+        (s for s in route if str(s.get("stationCode", "")).upper() == station_code),
+        None,
+    )
+
+    if station:
+        for key in ("delayArrival", "delayDeparture", "delayMinutes"):
+            if station.get(key) is not None:
+                return {
+                    "delay": float(station[key]),
+                    "source": "live_station_actual",
+                    "station_name": station.get("stationName"),
+                }
+
+    if data.get("delayMinutes") is not None:
+        return {
+            "delay": float(data["delayMinutes"]),
+            "source": "live_train_current",
+            "station_name": station.get("stationName") if station else None,
+        }
+
+    return None
+
+
 @app.route("/predict_delay")
 def predict_delay():
-    """Predict train delay in minutes using the trained ML model."""
+    """Return live delay for today or a forecast for future dates."""
     if _model is None or _meta is None:
         return jsonify({"error": "Model not trained yet. Please run train_delay_model.py first."}), 503
 
@@ -136,12 +179,21 @@ def predict_delay():
         zone_map     = _meta.get("zone_map", {})
         train_map    = _meta.get("train_map", {})
         train_avg    = _meta.get("train_avg", {})
-        stat_avg     = _meta.get("stat_avg", {})
 
         # Parse date features
         dt          = datetime.strptime(journey_date, "%Y-%m-%d")
+        requested_day = dt.date()
+        today = date.today()
         day_of_week = dt.weekday()    # 0=Mon
         month       = dt.month
+
+        if requested_day < today:
+            return jsonify({
+                "error": (
+                    f"Past dates are not predicted. {journey_date} is before {today.isoformat()}, "
+                    "and this app does not yet have a historical actual-delay lookup for past journeys."
+                )
+            }), 400
 
         # Get schedule info for this train+station
         train_sched = sched_lookup.get(str(train_no), {})
@@ -159,6 +211,27 @@ def predict_delay():
         station_no = int(sched_info.get("station_no", 5))
         distance   = float(sched_info.get("distance",   0))
         sched_hour = float(sched_info.get("sched_hour", 12))
+
+        if requested_day == today:
+            live_delay = _live_delay_for_station(train_no, station_code)
+            if live_delay is not None:
+                actual_delay = round(live_delay["delay"], 1)
+                if distance == 0 or station_no == 1:
+                    actual_delay = 0.0
+                status, color = _delay_status(actual_delay)
+                return jsonify({
+                    "train_no": train_no,
+                    "station": station_code,
+                    "date": journey_date,
+                    "predicted_delay": actual_delay,
+                    "status": status,
+                    "color": color,
+                    "day_of_week": dt.strftime("%A"),
+                    "mode": "live_actual",
+                    "result_label": "Live Delay",
+                    "value_label": "Actual Delay",
+                    "source_note": "Using today's live running status from RailRadar.",
+                })
 
         # Encode train type (look up from train_map → default 0)
         train_enc = int(train_map.get(str(train_no), 0))
@@ -184,19 +257,7 @@ def predict_delay():
         if distance == 0 or station_no == 1:
             predicted_delay = 0.0
 
-        # Determine status label
-        if predicted_delay <= 5:
-            status = "On Time"
-            color  = "green"
-        elif predicted_delay <= 30:
-            status = "Slightly Delayed"
-            color  = "orange"
-        elif predicted_delay <= 90:
-            status = "Moderately Delayed"
-            color  = "amber"
-        else:
-            status = "Highly Delayed"
-            color  = "red"
+        status, color = _delay_status(predicted_delay)
 
         return jsonify({
             "train_no":        train_no,
@@ -206,6 +267,10 @@ def predict_delay():
             "status":          status,
             "color":           color,
             "day_of_week":     dt.strftime("%A"),
+            "mode":            "forecast",
+            "result_label":    "Forecast Result",
+            "value_label":     "Expected Delay",
+            "source_note":     "Forecast based on historical patterns for the selected future journey date.",
         })
 
     except Exception as e:
